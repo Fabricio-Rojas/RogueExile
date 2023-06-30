@@ -33,7 +33,7 @@ namespace RogueExile.Classes
         {
             switch (MapGrid[NewLocation.X, NewLocation.Y].Val)
             {
-                case '*':
+                case '█':
                     return;
 
                 default:

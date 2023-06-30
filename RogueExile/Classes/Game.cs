@@ -18,34 +18,37 @@ namespace RogueExile.Classes
         public Game()
         {
             _map = new MapGenerator();
-            _map.Render();
             _character = new PlayerCharacter(new Cell(MapGenerator.mapW / 2, MapGenerator.mapH / 2, '@'), _map.mapGrid);
             _enemyCharacter = new EnemyCharacter();
         }
         public void Start()
         {
-            Console.WriteLine(Console.LargestWindowWidth);
             Console.WriteLine("Please press Alt + Enter, or F11 to enter fullscreen mode.");
             while (Console.WindowHeight < Console.LargestWindowHeight && Console.WindowWidth <= Console.LargestWindowWidth)
             {
                 continue;
             }
             Console.Clear();
+            _map.Render();
             Render();
 
             do
             {
-                ConsoleKey key = Console.ReadKey(intercept: true).Key;
-                OnKeyPress(key);
-                Render();
-                while (Console.KeyAvailable)
-                {
-                    Console.ReadKey(intercept: true);
-                }
+                GameTurn();
             }
             while (!GameOver);
         }
-        public void OnKeyPress(ConsoleKey key)
+        public void GameTurn()
+        {
+            ConsoleKey key = Console.ReadKey(intercept: true).Key;
+            PlayerTurnKeyPress(key);
+            Render();
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(intercept: true);
+            }
+        }
+        public void PlayerTurnKeyPress(ConsoleKey key)
         {
             switch (key)
             {

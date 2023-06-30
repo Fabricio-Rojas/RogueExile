@@ -1,4 +1,7 @@
 ﻿using RogueExile.Classes;
+using System.Text;
+
+Console.OutputEncoding = Encoding.UTF8;
 
 /*
 - add escape key close program [Done]
