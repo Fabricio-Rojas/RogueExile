@@ -27,6 +27,7 @@ namespace RogueExile.Classes
                     {
                         coord = coord.SetVal('█');
                         coord = coord.SetColor(ConsoleColor.Yellow);
+                        coord = coord.SetOccupied(true);
                     }
                     mapGrid[col, row] = coord;
                 }
@@ -47,6 +48,10 @@ namespace RogueExile.Classes
                 }
             }
             Console.SetCursorPosition(0, mapH);
+        }
+        void AddRooms()
+        {
+
         }
         public void Render()
         {

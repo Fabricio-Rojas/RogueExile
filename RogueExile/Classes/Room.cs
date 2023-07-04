@@ -31,10 +31,17 @@ namespace RogueExile.Classes
                 for (int row = 0; row < Height; row++)
                 {
                     Cell cell = new(col, row);
-                    if (cell.X == 0 || cell.X == Width - 1 || cell.Y == 0 || cell.Y == Height - 1)
+                    switch (cell.X)
                     {
-                        cell = cell.SetVal('█'); // https://theasciicode.com.ar/
-                        cell = cell.SetColor(ConsoleColor.Yellow);
+                        case 0:
+                            cell = cell.SetVal(cell.Y == 0 ? '╔' : (cell.Y == Height - 1 ? '╚' : '║'));
+                            break;
+                        case int val when val == Width - 1:
+                            cell = cell.SetVal(cell.Y == 0 ? '╗' : (cell.Y == Height - 1 ? '╝' : '║'));
+                            break;
+                        default:
+                            cell = cell.SetVal(cell.Y == 0 ? '═' : (cell.Y == Height - 1 ? '═' : ' '));
+                            break;
                     }
                     RoomGrid[col, row] = cell;
                 }
@@ -46,3 +53,11 @@ namespace RogueExile.Classes
         }
     }
 }
+
+/* https://theasciicode.com.ar/
+╔══╩══╗
+║     ║
+╣     ╠
+║     ║
+╚══╦══╝
+*/
