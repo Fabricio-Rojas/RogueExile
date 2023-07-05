@@ -51,12 +51,17 @@ namespace RogueExile.Classes
         }
         void AddRooms()
         {
-
+            for (int i = 0; i < 30; i++)
+            {
+                Room newRoom = new Room(this);
+                newRoom.Render();
+            }
         }
         public void Render()
         {
             GenerateBorders();
             PrintMap();
+            AddRooms();
         }
     }
 }

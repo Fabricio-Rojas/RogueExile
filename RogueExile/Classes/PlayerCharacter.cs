@@ -13,6 +13,8 @@ namespace RogueExile.Classes
         private Cell CurrentLocation;
         private Cell NewLocation;
         private readonly Cell[,] MapGrid;
+        private char newCharVal;
+        private char oldCharVal;
         public PlayerCharacter(Cell spawnLocation, Cell[,] mapGrid)
         {
             CurrentLocation = spawnLocation;
@@ -39,11 +41,13 @@ namespace RogueExile.Classes
                     return;
 
                 default:
+                    oldCharVal = newCharVal;
+                    newCharVal = MapGrid[NewLocation.X, NewLocation.Y].Val;
                     break;
             }
 
             Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
-            Console.Write(' ');
+            Console.Write(oldCharVal);
 
             CurrentLocation = (NewLocation.X > 0 && NewLocation.Y > 0) ? NewLocation : CurrentLocation;
 
