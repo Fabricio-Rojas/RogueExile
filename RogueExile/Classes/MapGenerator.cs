@@ -9,12 +9,14 @@ namespace RogueExile.Classes
 {
     internal class MapGenerator : IRenderable
     {
-        public static readonly int mapW = Console.LargestWindowWidth - 2;
-        public static readonly int mapH = Console.LargestWindowHeight - 2;
-        public Cell[,] mapGrid = new Cell[mapW, mapH];
+        public static int mapW;
+        public static int mapH;
+        public Cell[,] mapGrid;
         public MapGenerator()
         {
-
+            mapW = Console.LargestWindowWidth - 2;
+            mapH = Console.LargestWindowHeight - 2;
+            mapGrid = new Cell[mapW, mapH];
         }
         void GenerateBorders()
         {
@@ -51,10 +53,11 @@ namespace RogueExile.Classes
         }
         void AddRooms()
         {
-            for (int i = 0; i < 30; i++)
+            bool roomPossible = true;
+            while (roomPossible)
             {
                 Room newRoom = new Room(this);
-                newRoom.Render();
+                roomPossible = newRoom.PrintRoom();
             }
         }
         public void Render()

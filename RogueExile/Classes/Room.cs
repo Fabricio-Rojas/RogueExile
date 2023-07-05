@@ -1,14 +1,8 @@
 ﻿using RogueExile.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogueExile.Classes
 {
-    internal class Room : IRenderable
+    internal class Room
     {
         public int MaxWidth = 25;
         public int MaxHeight = 11;
@@ -17,6 +11,7 @@ namespace RogueExile.Classes
         public int Width;
         public int Height;
         public Cell[,] RoomGrid;
+        public Cell RoomCenter;
         Random random = new();
         public MapGenerator Map;
         public Room(MapGenerator mapGenerator)
@@ -26,12 +21,19 @@ namespace RogueExile.Classes
             RoomGrid = new Cell[Width, Height];
             Map = mapGenerator;
         }
-        private void GenerateBorders(int startX, int startY)
+        private bool GenerateBorders(int startX, int startY)
         {
             for (int col = 0; col < Width; col++)
             {
                 for (int row = 0; row < Height; row++)
                 {
+                    Cell mapCell = Map.mapGrid[startX + col, startY + row];
+
+                    if (mapCell.IsOccupied) // check if the cell we are trying to create already exsists
+                    {
+                        return false;
+                    }
+
                     Cell cell = new(startX + col, startY + row);
                     switch (cell.X)
                     {
@@ -48,23 +50,41 @@ namespace RogueExile.Classes
                             cell = cell.SetVal(cell.Y == startY ? '═' : (cell.Y == startY + Height - 1 ? '═' : ' '));
                             break;
                     }
+                    cell = cell.SetOccupied(true);
                     RoomGrid[col, row] = cell;
                 }
             }
+            return true;
         }
-        private void PrintRoom()
+        public bool PrintRoom()
         {
             int mapWidth = Map.mapGrid.GetLength(0);
             int mapHeight = Map.mapGrid.GetLength(1);
-            int startX = random.Next(2, mapWidth - Width - 2);
-            int startY = random.Next(2, mapHeight - Height - 2);
-            Cell roomCenter = Map.mapGrid[startX + (Width / 2), startY + (Height / 2)];
+            int startX = 0;
+            int startY = 0;
+            bool spaceFound = false;
 
-            GenerateBorders(startX, startY); 
+            for (int attempts = 0; attempts < 10 && !spaceFound; attempts++)
+            {
+                startX = random.Next(2, mapWidth - Width - 2);
+                startY = random.Next(2, mapHeight - Height - 2);
+
+                RoomCenter = Map.mapGrid[startX + (Width / 2), startY + (Height / 2)];
+
+                spaceFound = GenerateBorders(startX, startY);
+
+                if (attempts == 9)
+                {
+                    return false;
+                }
+            }
 
             // make the code scan out the cell for the potential room, if any of the cells have already been occupied, then retry and look
             // for a new room location with a new room size, if you find appropriate space, create and print the room and apply
             // is occupied = true to all cells of the room
+
+            // instead of creating doors manually, create a path from one room center to another, if cell is occupied and empty, continue,
+            // else if occupied and wall, create door, if not occupied, create corridor
 
             for (int col = 0; col < Width; col++)
             {
@@ -78,10 +98,7 @@ namespace RogueExile.Classes
                     Console.ResetColor();
                 }
             }
-        }
-        public void Render()
-        {
-            PrintRoom();
+            return true;
         }
     }
 }
