@@ -18,6 +18,7 @@ namespace RogueExile.Classes
         public PlayerCharacter(Cell spawnLocation, Cell[,] mapGrid)
         {
             CurrentLocation = spawnLocation;
+            NewLocation = CurrentLocation;
             MapGrid = mapGrid;
         }
         public void Move(Direction direction)
@@ -38,6 +39,7 @@ namespace RogueExile.Classes
                 case '█':
                 case '║':
                 case '═':
+                case ' ':
                     return;
 
                 default:

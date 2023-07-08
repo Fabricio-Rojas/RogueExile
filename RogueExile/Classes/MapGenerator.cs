@@ -16,7 +16,7 @@ namespace RogueExile.Classes
         public MapGenerator()
         {
             mapW = Console.LargestWindowWidth - 2;
-            mapH = Console.LargestWindowHeight - 2;
+            mapH = Console.LargestWindowHeight;
             mapGrid = new Cell[mapW, mapH];
             rooms = new HashSet<Room>();
         }
@@ -86,43 +86,42 @@ namespace RogueExile.Classes
                         firstTarget = targetRoom;
                     }
                 }
+                GeneratePath(startingPosition, firstTarget?.RoomCenter);
+                GeneratePath(startingPosition, secondTarget?.RoomCenter);
+            }
+        }
+        private void GeneratePath(Cell start, Cell? target)
+        {
+            if (target == null)
+                return;
 
-                // check why this is not printing
-                if (firstTarget != null)
+            List<Cell> path = GetCellsInPath(start, target);
+
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (path[i].IsOccupied)
                 {
-                    List<Cell> path1 = GetCellsInPath(startingPosition, firstTarget.RoomCenter);
-                    for (int i = 0; i < path1.Count; i++)
+                    bool isWall = path[i].Val switch
                     {
-                        if (path1[i].IsOccupied)
-                        {
-                            if (path1[i].Val == '║' || path1[i].Val == '═')
-                            {
-                                path1[i] = path1[i].SetVal('░');
-                            }
-                            continue;
-                        }
-                        path1[i] = path1[i].SetOccupied(true);
-                        path1[i] = path1[i].SetVal('░');
+                        '║' => true,
+                        '═' => true,
+                        '╔' => true,
+                        '╚' => true,
+                        '╗' => true,
+                        '╝' => true,
+                        _ => false
+                    };
+                    if (isWall)
+                    {
+                        path[i] = path[i].SetVal('#');
                     }
                 }
-
-                if (secondTarget != null)
+                else
                 {
-                    List<Cell> path2 = GetCellsInPath(startingPosition, secondTarget.RoomCenter);
-                    for (int i = 0; i < path2.Count; i++)
-                    {
-                        if (path2[i].IsOccupied)
-                        {
-                            if (path2[i].Val == '║' || path2[i].Val == '═')
-                            {
-                                path2[i] = path2[i].SetVal('░');
-                            }
-                            continue;
-                        }
-                        path2[i] = path2[i].SetOccupied(true);
-                        path2[i] = path2[i].SetVal('░');
-                    }
+                    path[i] = path[i].SetOccupied(true);
+                    path[i] = path[i].SetVal('░');
                 }
+                mapGrid[path[i].X, path[i].Y] = path[i];
             }
         }
         private List<Cell> GetCellsInPath(Cell start, Cell end)
@@ -154,7 +153,7 @@ namespace RogueExile.Classes
                     err -= dy;
                     x0 += sx;
                 }
-                if (err2 < dx)
+                else if (err2 < dx)
                 {
                     err += dx;
                     y0 += sy;

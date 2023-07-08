@@ -12,7 +12,6 @@ namespace RogueExile.Classes
         public int Height;
         public Cell[,] RoomGrid;
         public Cell RoomCenter;
-        public Cell[] ConnectedRooms;
         private readonly Random random = new();
         public MapGenerator Map;
         public Room(MapGenerator mapGenerator)
@@ -20,7 +19,6 @@ namespace RogueExile.Classes
             Width = random.Next(MinWidth, MaxWidth + 1);
             Height = random.Next(MinHeight, MaxHeight + 1);
             RoomGrid = new Cell[Width, Height];
-            ConnectedRooms = new Cell[2];
             Map = mapGenerator;
         }
         private bool GenerateBorders(int startX, int startY)
@@ -78,20 +76,12 @@ namespace RogueExile.Classes
                 }
             }
 
-            // each room should look for the 2 rooms nearest to them, and choose these rooms to select the RoomCenter
-            // instead of creating doors manually, create a path from one RoomCenter to another, if cell is occupied and empty, continue,
-            // else if occupied and wall, create door, if not occupied, create corridor
-
             for (int col = 0; col < Width; col++)
             {
                 for (int row = 0; row < Height; row++)
                 {
                     Cell currentCoord = RoomGrid[col, row];
                     Map.mapGrid[startX + col, startY + row] = currentCoord;
-                    //Console.SetCursorPosition(startX + col, startY + row);
-                    //Console.ForegroundColor = currentCoord.Color;
-                    //Console.Write(currentCoord.Val);
-                    //Console.ResetColor();
                 }
             }
             return true;
@@ -105,6 +95,6 @@ namespace RogueExile.Classes
 ╣     ╠
 ║     ║
 ╚══╦══╝
-
+╬
 ░▒▓·■@
 */

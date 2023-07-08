@@ -18,7 +18,7 @@ namespace RogueExile.Classes
         public Game()
         {
             _map = new MapGenerator();
-            // spawn player within a room
+            // spawn player within an occupied cell with '·' value
             _character = new PlayerCharacter(new Cell(MapGenerator.mapW / 2, MapGenerator.mapH / 2, '@'), _map.mapGrid);
             _enemyCharacter = new EnemyCharacter();
         }

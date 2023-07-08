@@ -18,3 +18,5 @@ Console.OutputEncoding = Encoding.UTF8;
 
 Game game = new();
 game.Start();
+
+// add colour to room walls, corridors, player character
