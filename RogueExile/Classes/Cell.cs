@@ -2,7 +2,7 @@
 
 namespace RogueExile.Classes
 {
-    internal readonly struct Cell
+    internal class Cell
     {
         public int X { get; }
         public int Y { get; }

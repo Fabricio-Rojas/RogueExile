@@ -10,14 +10,15 @@ namespace RogueExile.Classes
 {
     internal class Game : IRenderable
     {
-        private MapGenerator _map;
-        private PlayerCharacter _character;
-        private EnemyCharacter _enemyCharacter;
+        private readonly MapGenerator _map;
+        private readonly PlayerCharacter _character;
+        private readonly EnemyCharacter _enemyCharacter;
 
         public bool GameOver = false;
         public Game()
         {
             _map = new MapGenerator();
+            // spawn player within a room
             _character = new PlayerCharacter(new Cell(MapGenerator.mapW / 2, MapGenerator.mapH / 2, '@'), _map.mapGrid);
             _enemyCharacter = new EnemyCharacter();
         }
@@ -30,8 +31,7 @@ namespace RogueExile.Classes
             }
             Console.Clear();
             _map.Render();
-            Render();
-
+            GenerateEnemies(); // generate enemies within rooms
             do
             {
                 GameTurn();
@@ -84,10 +84,14 @@ namespace RogueExile.Classes
                     break;
             }
         }
+        public void GenerateEnemies()
+        {
+
+        }
         public void Render()
         {
-            _character.Render();
             _enemyCharacter.Render();
+            _character.Render();
         }
     }
 }

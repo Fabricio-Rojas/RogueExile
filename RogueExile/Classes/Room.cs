@@ -4,21 +4,23 @@ namespace RogueExile.Classes
 {
     internal class Room
     {
-        public int MaxWidth = 25;
-        public int MaxHeight = 11;
-        public int MinWidth = 5;
+        public int MaxWidth = 21;
+        public int MaxHeight = 10;
+        public int MinWidth = 7;
         public int MinHeight = 4;
         public int Width;
         public int Height;
         public Cell[,] RoomGrid;
         public Cell RoomCenter;
-        Random random = new();
+        public Cell[] ConnectedRooms;
+        private readonly Random random = new();
         public MapGenerator Map;
         public Room(MapGenerator mapGenerator)
         {
             Width = random.Next(MinWidth, MaxWidth + 1);
             Height = random.Next(MinHeight, MaxHeight + 1);
             RoomGrid = new Cell[Width, Height];
+            ConnectedRooms = new Cell[2];
             Map = mapGenerator;
         }
         private bool GenerateBorders(int startX, int startY)
@@ -38,16 +40,13 @@ namespace RogueExile.Classes
                     switch (cell.X)
                     {
                         case int val when val == startX:
-                            cell = cell.SetVal(cell.Y == startY ? '╔' : (cell.Y == startY + Height - 1 ? '╚' : (cell.Y == startY + (Height / 2) ? '╣' : '║')));
+                            cell = cell.SetVal(cell.Y == startY ? '╔' : (cell.Y == startY + Height - 1 ? '╚' : '║'));
                             break;
                         case int val when val == startX + Width - 1:
-                            cell = cell.SetVal(cell.Y == startY ? '╗' : (cell.Y == startY + Height - 1 ? '╝' : (cell.Y == startY + (Height / 2) ? '╠' : '║')));
-                            break;
-                        case int val when val == startX + (Width / 2):
-                            cell = cell.SetVal(cell.Y == startY ? '╩' : (cell.Y == startY + Height - 1 ? '╦' : ' '));
+                            cell = cell.SetVal(cell.Y == startY ? '╗' : (cell.Y == startY + Height - 1 ? '╝' : '║'));
                             break;
                         default:
-                            cell = cell.SetVal(cell.Y == startY ? '═' : (cell.Y == startY + Height - 1 ? '═' : ' '));
+                            cell = cell.SetVal(cell.Y == startY ? '═' : (cell.Y == startY + Height - 1 ? '═' : '·'));
                             break;
                     }
                     cell = cell.SetOccupied(true);
@@ -56,7 +55,7 @@ namespace RogueExile.Classes
             }
             return true;
         }
-        public bool PrintRoom()
+        public bool FindRoomSpace()
         {
             int mapWidth = Map.mapGrid.GetLength(0);
             int mapHeight = Map.mapGrid.GetLength(1);
@@ -64,7 +63,7 @@ namespace RogueExile.Classes
             int startY = 0;
             bool spaceFound = false;
 
-            for (int attempts = 0; attempts < 10 && !spaceFound; attempts++)
+            for (int attempts = 0; !spaceFound; attempts++)
             {
                 startX = random.Next(2, mapWidth - Width - 2);
                 startY = random.Next(2, mapHeight - Height - 2);
@@ -73,17 +72,14 @@ namespace RogueExile.Classes
 
                 spaceFound = GenerateBorders(startX, startY);
 
-                if (attempts == 9)
+                if (attempts == 50)
                 {
                     return false;
                 }
             }
 
-            // make the code scan out the cell for the potential room, if any of the cells have already been occupied, then retry and look
-            // for a new room location with a new room size, if you find appropriate space, create and print the room and apply
-            // is occupied = true to all cells of the room
-
-            // instead of creating doors manually, create a path from one room center to another, if cell is occupied and empty, continue,
+            // each room should look for the 2 rooms nearest to them, and choose these rooms to select the RoomCenter
+            // instead of creating doors manually, create a path from one RoomCenter to another, if cell is occupied and empty, continue,
             // else if occupied and wall, create door, if not occupied, create corridor
 
             for (int col = 0; col < Width; col++)
@@ -92,10 +88,10 @@ namespace RogueExile.Classes
                 {
                     Cell currentCoord = RoomGrid[col, row];
                     Map.mapGrid[startX + col, startY + row] = currentCoord;
-                    Console.SetCursorPosition(startX + col, startY + row);
-                    Console.ForegroundColor = currentCoord.Color;
-                    Console.Write(currentCoord.Val);
-                    Console.ResetColor();
+                    //Console.SetCursorPosition(startX + col, startY + row);
+                    //Console.ForegroundColor = currentCoord.Color;
+                    //Console.Write(currentCoord.Val);
+                    //Console.ResetColor();
                 }
             }
             return true;
@@ -105,8 +101,10 @@ namespace RogueExile.Classes
 
 /* https://theasciicode.com.ar/
 ╔══╩══╗
-║     ║·■@
+║     ║
 ╣     ╠
 ║     ║
 ╚══╦══╝
+
+░▒▓·■@
 */
