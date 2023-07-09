@@ -10,18 +10,16 @@ namespace RogueExile.Classes
 {
     internal class Game : IRenderable
     {
-        private readonly MapGenerator _map;
-        private readonly PlayerCharacter _character;
-        private readonly EnemyCharacter _enemyCharacter;
+        private MapGenerator _map;
+        private PlayerCharacter _character;
+        private readonly Random _random;
 
         public bool GameOver = false;
         public Game()
         {
-            _map = new MapGenerator();
-            // spawn player within an occupied cell with '·' value
-            _character = new PlayerCharacter(new Cell(MapGenerator.mapW / 2, MapGenerator.mapH / 2, '@'), _map.mapGrid);
-            _enemyCharacter = new EnemyCharacter();
+            _random = new Random();
         }
+        
         public void Start()
         {
             Console.WriteLine("Please press Alt + Enter, or F11 to enter fullscreen mode.");
@@ -30,13 +28,29 @@ namespace RogueExile.Classes
                 continue;
             }
             Console.Clear();
+
+            _map = new MapGenerator();
             _map.Render();
+
+            Cell spawnLocation = _map.rooms[_random.Next(0, _map.rooms.Count)].RoomCenter;
+            _character = new PlayerCharacter(spawnLocation, _map.mapGrid);
+            _character.Render();
+
             GenerateEnemies(); // generate enemies within rooms
+
             do
             {
                 GameTurn();
             }
             while (!GameOver);
+        }
+        private void Restart()
+        {
+
+        }
+        private void NextStage()
+        {
+
         }
         public void GameTurn()
         {
@@ -90,7 +104,7 @@ namespace RogueExile.Classes
         }
         public void Render()
         {
-            _enemyCharacter.Render();
+            //_enemyCharacter.Render();
             _character.Render();
         }
     }

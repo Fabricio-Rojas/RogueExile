@@ -10,20 +10,24 @@ namespace RogueExile.Classes
 {
     internal class PlayerCharacter : IRenderable, IMovable
     {
+        private char _icon;
+        private ConsoleColor _color;
         private Cell CurrentLocation;
         private Cell NewLocation;
         private readonly Cell[,] MapGrid;
-        private char newCharVal;
-        private char oldCharVal;
+        private Cell NewCell;
+        private Cell CellUnder;
         public PlayerCharacter(Cell spawnLocation, Cell[,] mapGrid)
         {
-            CurrentLocation = spawnLocation;
-            NewLocation = CurrentLocation;
+            _icon = '@';
+            _color = ConsoleColor.Cyan;
+            CurrentLocation = spawnLocation.SetVal(_icon).SetColor(_color);
+            NewLocation = mapGrid[CurrentLocation.X, CurrentLocation.Y];
             MapGrid = mapGrid;
         }
         public void Move(Direction direction)
         {
-            NewLocation = direction switch
+            Cell NextLocation = direction switch
             {
                 Direction.Up => CurrentLocation.MoveYBy(-1),
                 Direction.Down => CurrentLocation.MoveYBy(1),
@@ -31,10 +35,11 @@ namespace RogueExile.Classes
                 Direction.Right => CurrentLocation.MoveXBy(1),
                 _ => CurrentLocation,
             };
+            NewLocation = MapGrid[NextLocation.X, NextLocation.Y];
         }
         public void Render()
         {
-            switch (MapGrid[NewLocation.X, NewLocation.Y].Val)
+            switch (NewLocation.Val)
             {
                 case '█':
                 case '║':
@@ -43,18 +48,24 @@ namespace RogueExile.Classes
                     return;
 
                 default:
-                    oldCharVal = newCharVal;
-                    newCharVal = MapGrid[NewLocation.X, NewLocation.Y].Val;
+                    CellUnder = NewCell;
+                    NewCell = NewLocation;
                     break;
             }
 
-            Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
-            Console.Write(oldCharVal);
+            if (CellUnder != null)
+            {
+                Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
+                Console.ForegroundColor = CellUnder.Color;
+                Console.Write(CellUnder.Val);
+            }
 
             CurrentLocation = (NewLocation.X > 0 && NewLocation.Y > 0) ? NewLocation : CurrentLocation;
 
             Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
-            Console.Write(CurrentLocation.Val);
+            Console.ForegroundColor = _color;
+            Console.Write(_icon);
+            Console.ResetColor();
         }
     }
 }

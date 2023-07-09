@@ -48,6 +48,11 @@ namespace RogueExile.Classes
                             break;
                     }
                     cell = cell.SetOccupied(true);
+                    cell = cell.SetColor(ConsoleColor.DarkYellow);
+                    if (cell.Val == '·')
+                    {
+                        cell = cell.SetColor(ConsoleColor.DarkGray);
+                    }
                     RoomGrid[col, row] = cell;
                 }
             }

@@ -12,13 +12,13 @@ namespace RogueExile.Classes
         public static int mapW;
         public static int mapH;
         public Cell[,] mapGrid;
-        public HashSet<Room> rooms;
+        public List<Room> rooms;
         public MapGenerator()
         {
             mapW = Console.LargestWindowWidth - 2;
             mapH = Console.LargestWindowHeight;
             mapGrid = new Cell[mapW, mapH];
-            rooms = new HashSet<Room>();
+            rooms = new List<Room>();
         }
         private void GenerateBorders()
         {
@@ -51,7 +51,6 @@ namespace RogueExile.Classes
                     Console.ResetColor();
                 }
             }
-            Console.SetCursorPosition(0, mapH);
         }
         private void AddRooms()
         {

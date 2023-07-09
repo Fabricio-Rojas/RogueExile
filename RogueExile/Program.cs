@@ -5,8 +5,10 @@ Console.OutputEncoding = Encoding.UTF8;
 
 /*
 - add escape key close program [Done]
-- add randomly generated room layouts with paths
-- use different characters or ASCII for graphics
+- add randomly generated room layouts with paths [done]
+- use different characters or ASCII for graphics [done]
+- make player spawn in a random room [done]
+- add colour to room walls, corridors, player character [done]
 - add enemies that try to attack you once they see you
 - add an item system with drops and rarities
 - add multiple character classes, with a level up system with perks and upgrades
@@ -19,4 +21,5 @@ Console.OutputEncoding = Encoding.UTF8;
 Game game = new();
 game.Start();
 
-// add colour to room walls, corridors, player character
+// add enemies, scale enemy amounts and room quantity by character level
+// use scalings from text game
