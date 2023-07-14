@@ -10,18 +10,78 @@ namespace RogueExile.Classes
 {
     internal class PlayerCharacter : IRenderable, IMovable
     {
-        private char _icon;
-        private ConsoleColor _color;
+        private int _currentHealth, _exp, _lvlUpThreshold;
+
+        public string Name;
+        public int Level, Gold, BaseStrength, BaseDefense, MaxHealth;
+        public char Icon;
+        public ConsoleColor Color;
+        public int Exp
+        {
+            get { return _exp; }
+            set
+            {
+                if (value >= _lvlUpThreshold)
+                {
+                    LevelUp();
+                    _exp = 0;
+                }
+                _exp = value;
+            }
+        }
+        public int CurrentHealth
+        {
+            get { return _currentHealth; }
+            set
+            {
+                if (value > MaxHealth)
+                {
+                    _currentHealth = MaxHealth;
+                }
+                if (value < 0)
+                {
+                    _currentHealth = 0;
+                }
+                _currentHealth = value;
+            }
+        }
+        public Weapon EquippedWeapon;
+        public Armour EquippedArmour;
+        public List<Weapon> WeaponList;
+        public List<Armour> ArmourList;
+        public List<Consumable> ConsumableList;
+
         private Cell CurrentLocation;
         private Cell NewLocation;
         private readonly Cell[,] MapGrid;
         private Cell NewCell;
         private Cell CellUnder;
-        public PlayerCharacter(Cell spawnLocation, Cell[,] mapGrid)
+        private Random Random;
+        public PlayerCharacter(string name, Cell spawnLocation, Cell[,] mapGrid)
         {
-            _icon = '@';
-            _color = ConsoleColor.Cyan;
-            CurrentLocation = spawnLocation.SetVal(_icon).SetColor(_color);
+            Random = new Random();
+
+            Icon = '@';
+            Name = name;
+            Level = 1;
+            Color = ConsoleColor.Cyan;
+            Gold = Random.Next(10 + 1);
+            BaseStrength = (int)Math.Round(20 * Random.NextDouble()) + 5;
+            BaseDefense = (int)Math.Round(10 * Random.NextDouble()) + 3;
+            MaxHealth = 100;
+            CurrentHealth = MaxHealth;
+
+            WeaponList = new List<Weapon>();
+            ArmourList = new List<Armour>();
+            ConsumableList = new List<Consumable>();
+
+            EquippedWeapon = new Weapon("Bloodied Fist", 0);
+            EquippedArmour = new Armour("Tattered Rags", 0);
+            AddNewWeapon(EquippedWeapon);
+            AddNewArmor(EquippedArmour);
+            AddNewConsumable(new Consumable(0));
+
+            CurrentLocation = spawnLocation.SetVal(Icon).SetColor(Color);
             NewLocation = mapGrid[CurrentLocation.X, CurrentLocation.Y];
             MapGrid = mapGrid;
         }
@@ -36,6 +96,46 @@ namespace RogueExile.Classes
                 _ => CurrentLocation,
             };
             NewLocation = MapGrid[NextLocation.X, NextLocation.Y];
+        }
+        public void LevelUp()
+        {
+            Level++;
+            BaseStrength = (int)(2 + BaseStrength * 1.15);
+            BaseDefense = (int)(1 + BaseDefense * 1.10);
+            int OldHealth = MaxHealth;
+            MaxHealth = (int)(MaxHealth * 1.2);
+            CurrentHealth += MaxHealth - OldHealth;
+            _lvlUpThreshold = (int)((1 - (1 / ((0.112 * Level) + 1))) * 1000);
+        }
+        public void AddNewWeapon(Weapon weapon)
+        {
+            if (WeaponList.Count + 1 > 9)
+            {
+                Console.WriteLine("You can only hold up to 9 weapons at once");
+                Console.ReadKey(intercept: true);
+                return;
+            }
+            WeaponList.Add(weapon);
+        }
+        public void AddNewArmor(Armour armour)
+        {
+            if (ArmourList.Count + 1 > 9)
+            {
+                Console.WriteLine("You can only hold up to 9 armours at once");
+                Console.ReadKey(intercept: true);
+                return;
+            }
+            ArmourList.Add(armour);
+        }
+        public void AddNewConsumable(Consumable consumable)
+        {
+            if (ConsumableList.Count + 1 > 9)
+            {
+                Console.WriteLine("You can only hold up to 9 consumables at once");
+                Console.ReadKey(intercept: true);
+                return;
+            }
+            ConsumableList.Add(consumable);
         }
         public void Render()
         {
@@ -63,8 +163,8 @@ namespace RogueExile.Classes
             CurrentLocation = (NewLocation.X > 0 && NewLocation.Y > 0) ? NewLocation : CurrentLocation;
 
             Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
-            Console.ForegroundColor = _color;
-            Console.Write(_icon);
+            Console.ForegroundColor = Color;
+            Console.Write(Icon);
             Console.ResetColor();
         }
     }
