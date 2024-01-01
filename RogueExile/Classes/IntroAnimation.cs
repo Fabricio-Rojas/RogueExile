@@ -1,7 +1,10 @@
-﻿namespace RogueExile.Classes
+﻿using System.Windows.Input;
+
+namespace RogueExile.Classes
 {
-    internal static class AnimationFrames
+    internal static class IntroAnimation
     {
+        private static bool enterKeyPressed = false;
         private static List<string> frames = new List<string>();
         private static string becomeText = "██████╗░███████╗░█████╗░░█████╗░███╗░░░███╗███████╗\r\n██╔══██╗██╔════╝██╔══██╗██╔══██╗████╗░████║██╔════╝\r\n██████╦╝█████╗░░██║░░╚═╝██║░░██║██╔████╔██║█████╗░░\r\n██╔══██╗██╔══╝░░██║░░██╗██║░░██║██║╚██╔╝██║██╔══╝░░\r\n██████╦╝███████╗╚█████╔╝╚█████╔╝██║░╚═╝░██║███████╗\r\n╚═════╝░╚══════╝░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚══════╝";
         private static string theText = "████████╗██╗░░██╗███████╗\r\n╚══██╔══╝██║░░██║██╔════╝\r\n░░░██║░░░███████║█████╗░░\r\n░░░██║░░░██╔══██║██╔══╝░░\r\n░░░██║░░░██║░░██║███████╗\r\n░░░╚═╝░░░╚═╝░░╚═╝╚══════╝";
@@ -45,22 +48,30 @@
             IntroText();
             AddFrames();
             string lineLength = "                                         ..................                                         ";
-            int startingPosition = (Console.LargestWindowWidth / 2) - (lineLength.Length / 2);
-            while (!Console.KeyAvailable)
+            int startingLeft = (Console.LargestWindowWidth / 2) - (lineLength.Length / 2);
+
+            Thread keyPressThread = new Thread(ListenForKeyPress);
+            keyPressThread.Start();
+
+            while (!enterKeyPressed)
             {
                 for (int i = 0; i < frames.Count; i++)
                 {
                     string[] line = frames[i].Split('\n');
+                    int startingTop = (Console.LargestWindowHeight / 2) - (line.Length / 2);
 
                     for (int j = 0; j < line.Length; j++)
                     {
-                        Console.SetCursorPosition(startingPosition, j + 3);
-                        Console.WriteLine(line[j]);
+                        Console.SetCursorPosition(startingLeft, startingTop + j);
+                        Console.Write(line[j]);
                     }
+
+                    Console.WriteLine();
+                    Game.WriteCentered("Press Enter to continue.", Console.CursorTop + 1);
+
                     Thread.Sleep(20);
                 }
             }
-            //Thread.Sleep(400);
             Console.SetCursorPosition(0, Console.LargestWindowHeight * 2);
             Thread.Sleep(400);
             Console.SetCursorPosition(0, 0);
@@ -68,6 +79,8 @@
             Console.SetCursorPosition(0, Console.LargestWindowHeight * 2);
             Thread.Sleep(400);
             Console.SetCursorPosition(0, 0);
+
+            while (Console.KeyAvailable) { Console.ReadKey(false); }
         }
         private static void IntroText()
         {
@@ -87,6 +100,22 @@
             }
             Thread.Sleep(1000);
             Console.Clear();
+        }
+        private static void ListenForKeyPress()
+        {
+            while (!enterKeyPressed)
+            {
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKey key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.Enter)
+                    {
+                        enterKeyPressed = true;
+                        break;
+                    }
+                }
+                Thread.Sleep(50);
+            }
         }
     }
 }

@@ -4,13 +4,13 @@ using System.Text;
 Console.OutputEncoding = Encoding.UTF8;
 
 /*
-- add escape key close program [Done]
-- add randomly generated room layouts with paths [done]
-- use different characters or ASCII for graphics [done]
-- make player spawn in a random room [done]
--  add colour to room walls, corridors, player character [done]
-// print menu below game map, move screen with setCursorPosition [done]
-- add an intro animation and possibly some background music or intro music [done]
+- [DONE] add escape key close program
+- [DONE] add randomly generated room layouts with paths
+- [DONE] use different characters or ASCII for graphics
+- [DONE] make player spawn in a random room
+- [DONE] add colour to room walls, corridors, player character
+- [DONE] print menu below game map, move screen with setCursorPosition
+- [DONE] add an intro animation and possibly some background music or intro music
 - add enemies that try to attack you once they see you
 - add an item system with drops and rarities
 - add multiple character classes, with a level up system with perks and upgrades

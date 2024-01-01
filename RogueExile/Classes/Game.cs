@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace RogueExile.Classes
 {
@@ -16,6 +17,9 @@ namespace RogueExile.Classes
         private readonly Random _random;
 
         public bool GameOver = false;
+
+        public static int MaxWindowHeight = 46;
+        public static int MaxWindowWidth = 170;
         public Game()
         {
             _random = new Random();
@@ -23,8 +27,10 @@ namespace RogueExile.Classes
 
         public void Start()
         {
-            Console.WriteLine("Please press Alt + Enter, or F11 to enter fullscreen mode.");
-            while (Console.WindowHeight < Console.LargestWindowHeight && Console.WindowWidth <= Console.LargestWindowWidth)
+            WriteCentered("Please press Alt + Enter, or F11 to enter fullscreen mode.\n", (Console.WindowHeight / 2) - 1);
+            WriteCentered("Also, make sure you're using Windows Console and not Windows Terminal.");
+
+            while (Console.WindowHeight < MaxWindowHeight && Console.WindowWidth < MaxWindowWidth)
             {
                 continue;
             }
@@ -50,20 +56,54 @@ namespace RogueExile.Classes
         }
         private string GameIntro()
         {
-            Console.Write("What is your name, Exile?: ");
-            string? playerName = Console.ReadLine();
-            while (string.IsNullOrEmpty(playerName) || !Regex.IsMatch(playerName, @"^[A-Za-z\s]+$"))
+            bool enterPressedPreviously = false;
+            string playerName = "";
+
+            while (true)
             {
                 Console.Clear();
-                Console.Write("Please tell me your name, Exile: ");
-                playerName = Console.ReadLine();
+                if (enterPressedPreviously)
+                {
+                    WriteCentered("Please tell me your name, Exile: \n", (Console.WindowHeight / 2) - 2);
+                }
+                else
+                {
+                    WriteCentered("What is your name, Exile?: \n", (Console.WindowHeight / 2) - 2);
+                }
+                enterPressedPreviously = false;
+
+                WriteCentered("\n");
+                WriteCentered(playerName);
+                WriteCentered("\n\n");
+                WriteCentered("Press enter to continue.");
+
+                int nameLengthPosition = (Console.WindowWidth / 2) + (playerName.Length / 2);
+                nameLengthPosition += playerName.Length % 2 != 0 ? 1 : 0;
+                Console.SetCursorPosition(nameLengthPosition, Console.WindowHeight / 2);
+
+                ConsoleKeyInfo key = Console.ReadKey(false);
+
+                if (char.IsLetter(key.KeyChar))
+                {
+                    playerName += key.KeyChar;
+                }
+                else if (key.Key == ConsoleKey.Backspace && playerName.Length > 0)
+                {
+                    playerName = playerName.Remove(playerName.Length - 1);
+                }
+                else if (key.Key == ConsoleKey.Enter)
+                {
+                    enterPressedPreviously = true;
+                    if (playerName.Length > 0) break;
+                }
             }
+            
             Console.Clear();
             return playerName;
         }
         public void IntroAnimation()
         {
-            AnimationFrames.Play();
+            Classes.IntroAnimation.Play();
         }
         private void Restart()
         {
@@ -139,6 +179,11 @@ namespace RogueExile.Classes
         {
             //_enemyCharacter.Render();
             _character.Render();
+        }
+        public static void WriteCentered(string text, int? topPosition = null)
+        {
+            Console.SetCursorPosition((Console.WindowWidth / 2) - (text.Length / 2), (topPosition ?? Console.CursorTop));
+            Console.Write(text);
         }
     }
 }
