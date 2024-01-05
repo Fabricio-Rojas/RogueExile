@@ -36,11 +36,12 @@ namespace RogueExile.Classes
             }
             Console.Clear();
 
-            string playerName = GameIntro();
-            IntroAnimation();
+            string playerName = IntroSequence.Play();
 
             _map = new MapGenerator();
             _map.Render();
+
+            MenuManager.DisplayUI();
 
             Cell spawnLocation = _map.rooms[_random.Next(0, _map.rooms.Count)].RoomCenter;
             _character = new PlayerCharacter(playerName, spawnLocation, _map.mapGrid);
@@ -53,57 +54,6 @@ namespace RogueExile.Classes
                 GameTurn();
             }
             while (!GameOver);
-        }
-        private string GameIntro()
-        {
-            bool enterPressedPreviously = false;
-            string playerName = "";
-
-            while (true)
-            {
-                Console.Clear();
-                if (enterPressedPreviously)
-                {
-                    WriteCentered("Please tell me your name, Exile: \n", (Console.WindowHeight / 2) - 2);
-                }
-                else
-                {
-                    WriteCentered("What is your name, Exile?: \n", (Console.WindowHeight / 2) - 2);
-                }
-                enterPressedPreviously = false;
-
-                WriteCentered("\n");
-                WriteCentered(playerName);
-                WriteCentered("\n\n");
-                WriteCentered("Press enter to continue.");
-
-                int nameLengthPosition = (Console.WindowWidth / 2) + (playerName.Length / 2);
-                nameLengthPosition += playerName.Length % 2 != 0 ? 1 : 0;
-                Console.SetCursorPosition(nameLengthPosition, Console.WindowHeight / 2);
-
-                ConsoleKeyInfo key = Console.ReadKey(false);
-
-                if (char.IsLetter(key.KeyChar))
-                {
-                    playerName += key.KeyChar;
-                }
-                else if (key.Key == ConsoleKey.Backspace && playerName.Length > 0)
-                {
-                    playerName = playerName.Remove(playerName.Length - 1);
-                }
-                else if (key.Key == ConsoleKey.Enter)
-                {
-                    enterPressedPreviously = true;
-                    if (playerName.Length > 0) break;
-                }
-            }
-            
-            Console.Clear();
-            return playerName;
-        }
-        public void IntroAnimation()
-        {
-            Classes.IntroAnimation.Play();
         }
         private void Restart()
         {
@@ -125,10 +75,10 @@ namespace RogueExile.Classes
         }
         public void ShowMenu()
         {
-            Console.SetCursorPosition(0, MapGenerator.mapH * 2);
-            Console.SetCursorPosition(0, MapGenerator.mapH);
-            Console.WriteLine("Press any key to continue");
-            Console.ReadKey(intercept: true);
+            Console.SetCursorPosition(0, Console.WindowHeight * 2);
+            Console.SetCursorPosition(0, Console.WindowHeight);
+            WriteCentered("Press any key to continue", (int)(Console.WindowHeight * 1.5));
+            Console.ReadKey(true);
             Console.SetCursorPosition(0, 0);
         }
         public void PlayerTurnKeyPress(ConsoleKey key)
@@ -159,12 +109,8 @@ namespace RogueExile.Classes
                     _character.Move(Direction.Right);
                     break;
 
-                case ConsoleKey.Tab:
-                    ShowMenu();
-                    break;
-
                 case ConsoleKey.Escape:
-                    Environment.Exit(0);
+                    ShowMenu();
                     break;
 
                 default:

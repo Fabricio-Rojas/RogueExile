@@ -145,6 +145,10 @@ namespace RogueExile.Classes
                 case '║':
                 case '═':
                 case ' ':
+                case '╔':
+                case '╗':
+                case '╚':
+                case '╝':
                     return;
 
                 default:

@@ -21,7 +21,7 @@ namespace RogueExile.Classes
             RoomGrid = new Cell[Width, Height];
             Map = mapGenerator;
         }
-        private bool GenerateBorders(int startX, int startY)
+        private bool TryPlacingInMap(int startX, int startY)
         {
             for (int col = 0; col < Width; col++)
             {
@@ -71,9 +71,7 @@ namespace RogueExile.Classes
                 startX = random.Next(2, mapWidth - Width - 2);
                 startY = random.Next(2, mapHeight - Height - 2);
 
-                RoomCenter = Map.mapGrid[startX + (Width / 2), startY + (Height / 2)];
-
-                spaceFound = GenerateBorders(startX, startY);
+                spaceFound = TryPlacingInMap(startX, startY);
 
                 if (attempts == 50)
                 {
@@ -87,6 +85,7 @@ namespace RogueExile.Classes
                 {
                     Cell currentCoord = RoomGrid[col, row];
                     Map.mapGrid[startX + col, startY + row] = currentCoord;
+                    RoomCenter = Map.mapGrid[startX + (Width / 2), startY + (Height / 2)];
                 }
             }
             return true;

@@ -16,7 +16,7 @@ namespace RogueExile.Classes
         public MapGenerator()
         {
             mapW = Console.LargestWindowWidth - 2;
-            mapH = Console.LargestWindowHeight;
+            mapH = Console.LargestWindowHeight - 2;
             mapGrid = new Cell[mapW, mapH];
             rooms = new List<Room>();
         }
@@ -37,6 +37,43 @@ namespace RogueExile.Classes
                 }
             }
         }
+        private void AddRooms()
+        {
+            bool roomPossible = true;
+            while (roomPossible)
+            {
+                Room newRoom = new(this);
+                roomPossible = newRoom.FindRoomSpace();
+                if (roomPossible) rooms.Add(newRoom);
+            }
+        }
+        private void AddPaths()
+        {
+            foreach (Room room in rooms)
+            {
+                Room startingRoom = room;
+                Room? firstTarget = null;
+                Room? secondTarget = null;
+                int shortestDistance = int.MaxValue;
+
+                foreach (Room targetRoom in rooms)
+                {
+                    if (targetRoom == room)
+                        continue;
+
+                    int distance = Math.Abs(targetRoom.RoomCenter.X - startingRoom.RoomCenter.X) + Math.Abs(targetRoom.RoomCenter.Y - startingRoom.RoomCenter.Y);
+
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        secondTarget = firstTarget;
+                        firstTarget = targetRoom;
+                    }
+                }
+                GeneratePath(startingRoom, firstTarget);
+                GeneratePath(startingRoom, secondTarget);
+            }
+        }
         private void PrintMap()
         {
             Console.CursorVisible = false;
@@ -52,49 +89,12 @@ namespace RogueExile.Classes
                 }
             }
         }
-        private void AddRooms()
+        private void GeneratePath(Room startingRoom, Room? targetRoom)
         {
-            bool roomPossible = true;
-            while (roomPossible)
-            {
-                Room newRoom = new(this);
-                roomPossible = newRoom.FindRoomSpace();
-                rooms.Add(newRoom);
-            }
-        }
-        private void AddPaths()
-        {
-            foreach (Room room in rooms)
-            {
-                Cell startingPosition = room.RoomCenter;
-                Room? firstTarget = null;
-                Room? secondTarget = null;
-                int shortestDistance = int.MaxValue;
-
-                foreach (Room targetRoom in rooms)
-                {
-                    if (targetRoom == room)
-                        continue;
-
-                    int distance = Math.Abs(targetRoom.RoomCenter.X - startingPosition.X) + Math.Abs(targetRoom.RoomCenter.Y - startingPosition.Y);
-
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        secondTarget = firstTarget;
-                        firstTarget = targetRoom;
-                    }
-                }
-                GeneratePath(startingPosition, firstTarget?.RoomCenter);
-                GeneratePath(startingPosition, secondTarget?.RoomCenter);
-            }
-        }
-        private void GeneratePath(Cell start, Cell? target)
-        {
-            if (target == null)
+            if (targetRoom == null)
                 return;
 
-            List<Cell> path = GetCellsInPath(start, target);
+            List<Cell> path = AStar.FindPath(mapGrid, startingRoom, targetRoom);
 
             for (int i = 0; i < path.Count; i++)
             {
@@ -122,43 +122,6 @@ namespace RogueExile.Classes
                 }
                 mapGrid[path[i].X, path[i].Y] = path[i];
             }
-        }
-        private List<Cell> GetCellsInPath(Cell start, Cell end)
-        {
-            List<Cell> cells = new List<Cell>();
-
-            int x0 = start.X;
-            int y0 = start.Y;
-            int x1 = end.X;
-            int y1 = end.Y;
-
-            int dx = Math.Abs(x1 - x0);
-            int dy = Math.Abs(y1 - y0);
-            int sx = x0 < x1 ? 1 : -1;
-            int sy = y0 < y1 ? 1 : -1;
-            int err = dx - dy;
-
-            while (true)
-            {
-                cells.Add(mapGrid[x0, y0]);
-
-                if (x0 == x1 && y0 == y1)
-                    break;
-
-                int err2 = 2 * err;
-
-                if (err2 > -dy)
-                {
-                    err -= dy;
-                    x0 += sx;
-                }
-                else if (err2 < dx)
-                {
-                    err += dx;
-                    y0 += sy;
-                }
-            }
-            return cells;
         }
         public void Render()
         {
