@@ -24,6 +24,3 @@ game.Start();
 
 // add enemies, scale enemy amounts and room quantity by character level
 // use scalings from text game
-// create more space between rooms
-// a room should only ever have two connections
-// keep track of what rooms are already connected as to not repeat connections

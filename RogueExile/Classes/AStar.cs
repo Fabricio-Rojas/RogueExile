@@ -62,8 +62,6 @@ namespace RogueExile.Classes
                 int[] dx = { 0, 1, 0, -1 };
                 int[] dy = { 1, 0, -1, 0 };
 
-                List<Node> directionNodes = new List<Node>();
-
                 for (int i = 0; i < 4; i++)
                 {
                     int newX = currentCell.X + dx[i];

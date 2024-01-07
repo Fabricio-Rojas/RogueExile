@@ -12,6 +12,7 @@ namespace RogueExile.Classes
         public int Height;
         public Cell[,] RoomGrid;
         public Cell RoomCenter;
+        public List<Room> LinkedRooms = new();
         private readonly Random random = new();
         public MapGenerator Map;
         public Room(MapGenerator mapGenerator)
@@ -32,6 +33,18 @@ namespace RogueExile.Classes
                     if (mapCell.IsOccupied) // check if the cell we are trying to create already exsists
                     {
                         return false;
+                    }
+
+                    // make sure we are not touching walls with another room
+                    int[] dx = { 0, 1, 0, -1 };
+                    int[] dy = { 1, 0, -1, 0 };
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int neighbourCellX = mapCell.X + (dx[i]*2);
+                        int neighbourCellY = mapCell.Y + (dy[i]*2);
+                        Cell neighbourCell = Map.mapGrid[neighbourCellX, neighbourCellY];
+                        if (neighbourCell.IsOccupied) return false;
                     }
 
                     Cell cell = new(startX + col, startY + row);
@@ -72,6 +85,31 @@ namespace RogueExile.Classes
                 startY = random.Next(2, mapHeight - Height - 2);
 
                 spaceFound = TryPlacingInMap(startX, startY);
+
+                if (attempts % 10 == 0 && !spaceFound)
+                {
+                    int chance = random.Next(2);
+
+                    if (Width > MinWidth && Height > MinHeight)
+                    {
+                        if (chance == 0)
+                        {
+                            Width -= 1;
+                        }
+                        else
+                        {
+                            Height -= 1;
+                        }
+                    }
+                    else if (Width > MinWidth)
+                    {
+                        Width -= 1;
+                    }
+                    else if (Height > MinHeight)
+                    {
+                        Height -= 1;
+                    }
+                }
 
                 if (attempts == 50)
                 {

@@ -58,7 +58,7 @@ namespace RogueExile.Classes
 
                 foreach (Room targetRoom in rooms)
                 {
-                    if (targetRoom == room)
+                    if (targetRoom == room || startingRoom.LinkedRooms.Contains(targetRoom) || targetRoom.LinkedRooms.Contains(startingRoom))
                         continue;
 
                     int distance = Math.Abs(targetRoom.RoomCenter.X - startingRoom.RoomCenter.X) + Math.Abs(targetRoom.RoomCenter.Y - startingRoom.RoomCenter.Y);
@@ -93,6 +93,9 @@ namespace RogueExile.Classes
         {
             if (targetRoom == null)
                 return;
+
+            startingRoom.LinkedRooms.Add(targetRoom);
+            targetRoom.LinkedRooms.Add(targetRoom);
 
             List<Cell> path = AStar.FindPath(mapGrid, startingRoom, targetRoom);
 
