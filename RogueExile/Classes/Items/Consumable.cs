@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.Items
 {
     internal class Consumable
     {

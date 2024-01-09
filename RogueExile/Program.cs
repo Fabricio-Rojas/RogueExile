@@ -1,4 +1,4 @@
-﻿using RogueExile.Classes;
+﻿using RogueExile.Classes.GameManagement;
 using System.Text;
 
 Console.OutputEncoding = Encoding.UTF8;
@@ -22,5 +22,5 @@ Console.OutputEncoding = Encoding.UTF8;
 Game game = new();
 game.Start();
 
-// add enemies, scale enemy amounts and room quantity by character level
+// add enemies, scale enemy stat amounts and room quantity by character level
 // use scalings from text game

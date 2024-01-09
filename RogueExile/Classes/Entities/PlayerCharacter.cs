@@ -1,4 +1,6 @@
-﻿using RogueExile.Enums;
+﻿using RogueExile.Classes.Items;
+using RogueExile.Classes.MapGen;
+using RogueExile.Enums;
 using RogueExile.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.Entities
 {
     internal class PlayerCharacter : IRenderable, IMovable
     {
@@ -52,10 +54,7 @@ namespace RogueExile.Classes
         public List<Consumable> ConsumableList;
 
         private Cell CurrentLocation;
-        private Cell NewLocation;
         private readonly Cell[,] MapGrid;
-        private Cell NewCell;
-        private Cell CellUnder;
         private Random Random;
         public PlayerCharacter(string name, Cell spawnLocation, Cell[,] mapGrid)
         {
@@ -70,6 +69,8 @@ namespace RogueExile.Classes
             BaseDefense = (int)Math.Round(10 * Random.NextDouble()) + 3;
             MaxHealth = 100;
             CurrentHealth = MaxHealth;
+            Exp = 0;
+            _lvlUpThreshold = 100;
 
             WeaponList = new List<Weapon>();
             ArmourList = new List<Armour>();
@@ -82,12 +83,15 @@ namespace RogueExile.Classes
             AddNewConsumable(new Consumable(0));
 
             CurrentLocation = spawnLocation.SetVal(Icon).SetColor(Color);
-            NewLocation = mapGrid[CurrentLocation.X, CurrentLocation.Y];
             MapGrid = mapGrid;
+        }
+        public void Spawn()
+        {
+            Render();
         }
         public void Move(Direction direction)
         {
-            Cell NextLocation = direction switch
+            Cell NewLocation = direction switch
             {
                 Direction.Up => CurrentLocation.MoveYBy(-1),
                 Direction.Down => CurrentLocation.MoveYBy(1),
@@ -95,7 +99,37 @@ namespace RogueExile.Classes
                 Direction.Right => CurrentLocation.MoveXBy(1),
                 _ => CurrentLocation,
             };
-            NewLocation = MapGrid[NextLocation.X, NextLocation.Y];
+            NewLocation = MapGrid[NewLocation.X, NewLocation.Y];
+
+            Cell CellUnder;
+
+            switch (NewLocation.Val)
+            {
+                case '█':
+                case '║':
+                case '═':
+                case ' ':
+                case '╔':
+                case '╗':
+                case '╚':
+                case '╝':
+                    return;
+
+                default:
+                    CellUnder = CurrentLocation;
+                    CurrentLocation = NewLocation;
+                    break;
+            }
+
+            if (CellUnder != null)
+            {
+                Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
+                Console.ForegroundColor = CellUnder.Color;
+                Console.Write(CellUnder.Val);
+                Console.ResetColor();
+            }
+
+            Render();
         }
         public void LevelUp()
         {
@@ -105,7 +139,7 @@ namespace RogueExile.Classes
             int OldHealth = MaxHealth;
             MaxHealth = (int)(MaxHealth * 1.2);
             CurrentHealth += MaxHealth - OldHealth;
-            _lvlUpThreshold = (int)((1 - (1 / ((0.112 * Level) + 1))) * 1000);
+            _lvlUpThreshold = (int)((1 - 1 / (0.112 * Level + 1)) * 1000);
         }
         public void AddNewWeapon(Weapon weapon)
         {
@@ -139,33 +173,6 @@ namespace RogueExile.Classes
         }
         public void Render()
         {
-            switch (NewLocation.Val)
-            {
-                case '█':
-                case '║':
-                case '═':
-                case ' ':
-                case '╔':
-                case '╗':
-                case '╚':
-                case '╝':
-                    return;
-
-                default:
-                    CellUnder = NewCell;
-                    NewCell = NewLocation;
-                    break;
-            }
-
-            if (CellUnder != null)
-            {
-                Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
-                Console.ForegroundColor = CellUnder.Color;
-                Console.Write(CellUnder.Val);
-            }
-
-            CurrentLocation = (NewLocation.X > 0 && NewLocation.Y > 0) ? NewLocation : CurrentLocation;
-
             Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
             Console.ForegroundColor = Color;
             Console.Write(Icon);

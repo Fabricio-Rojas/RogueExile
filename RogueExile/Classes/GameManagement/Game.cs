@@ -1,4 +1,6 @@
-﻿using RogueExile.Enums;
+﻿using RogueExile.Classes.Entities;
+using RogueExile.Classes.MapGen;
+using RogueExile.Enums;
 using RogueExile.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.GameManagement
 {
     internal class Game : IRenderable
     {
@@ -27,7 +29,7 @@ namespace RogueExile.Classes
 
         public void Start()
         {
-            WriteCentered("Please press Alt + Enter, or F11 to enter fullscreen mode.\n", (Console.WindowHeight / 2) - 1);
+            WriteCentered("Please press Alt + Enter, or F11 to enter fullscreen mode.\n", Console.WindowHeight / 2 - 1);
             WriteCentered("Also, make sure you're using Windows Console and not Windows Terminal.");
 
             while (Console.WindowHeight < MaxWindowHeight && Console.WindowWidth < MaxWindowWidth)
@@ -39,13 +41,13 @@ namespace RogueExile.Classes
             string playerName = IntroSequence.Play();
 
             _map = new MapGenerator();
-            _map.Render();
+            _map.Generate(1);
 
             MenuManager.DisplayUI();
 
             Cell spawnLocation = _map.rooms[_random.Next(0, _map.rooms.Count)].RoomCenter;
             _character = new PlayerCharacter(playerName, spawnLocation, _map.mapGrid);
-            _character.Render();
+            _character.Spawn();
 
             GenerateEnemies(); // generate enemies within rooms
 
@@ -128,7 +130,7 @@ namespace RogueExile.Classes
         }
         public static void WriteCentered(string text, int? topPosition = null)
         {
-            Console.SetCursorPosition((Console.WindowWidth / 2) - (text.Length / 2), (topPosition ?? Console.CursorTop));
+            Console.SetCursorPosition(Console.WindowWidth / 2 - text.Length / 2, topPosition ?? Console.CursorTop);
             Console.Write(text);
         }
     }

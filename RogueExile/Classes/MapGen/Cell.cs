@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.MapGen
 {
     internal class Cell
     {

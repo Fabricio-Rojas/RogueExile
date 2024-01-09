@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.GameManagement
 {
     internal static class IntroSequence
     {
@@ -53,7 +53,7 @@ namespace RogueExile.Classes
             IntroText();
             AddFrames();
             string lineLength = "                                         ..................                                         ";
-            int startingLeft = (Console.LargestWindowWidth / 2) - (lineLength.Length / 2);
+            int startingLeft = Console.LargestWindowWidth / 2 - lineLength.Length / 2;
 
             Thread keyPressThread = new Thread(ListenForKeyPress);
             keyPressThread.Start();
@@ -63,7 +63,7 @@ namespace RogueExile.Classes
                 for (int i = 0; i < frames.Count; i++)
                 {
                     string[] line = frames[i].Split('\n');
-                    int startingTop = (Console.LargestWindowHeight / 2) - (line.Length / 2);
+                    int startingTop = Console.LargestWindowHeight / 2 - line.Length / 2;
 
                     for (int j = 0; j < line.Length; j++)
                     {
@@ -98,11 +98,11 @@ namespace RogueExile.Classes
                 Console.Clear();
                 if (enterPressedPreviously)
                 {
-                    Game.WriteCentered("Please tell me your name, Exile: \n", (Console.WindowHeight / 2) - 2);
+                    Game.WriteCentered("Please tell me your name, Exile: \n", Console.WindowHeight / 2 - 2);
                 }
                 else
                 {
-                    Game.WriteCentered("What is your name, Exile?: \n", (Console.WindowHeight / 2) - 2);
+                    Game.WriteCentered("What is your name, Exile?: \n", Console.WindowHeight / 2 - 2);
                 }
                 enterPressedPreviously = false;
 
@@ -111,7 +111,7 @@ namespace RogueExile.Classes
                 Game.WriteCentered("\n\n");
                 Game.WriteCentered("Press enter to continue.");
 
-                int nameLengthPosition = (Console.WindowWidth / 2) + (playerName.Length / 2);
+                int nameLengthPosition = Console.WindowWidth / 2 + playerName.Length / 2;
                 nameLengthPosition += playerName.Length % 2 != 0 ? 1 : 0;
                 Console.SetCursorPosition(nameLengthPosition, Console.WindowHeight / 2);
 
@@ -140,15 +140,15 @@ namespace RogueExile.Classes
             string[] firstWord = becomeText.Split("\r\n");
             for (int i = 0; i < firstWord.Length; i++)
             {
-                Console.SetCursorPosition((Console.LargestWindowWidth / 2) - (firstWord[i].Length / 2), i + (Console.LargestWindowHeight / 2) - 6);
+                Console.SetCursorPosition(Console.LargestWindowWidth / 2 - firstWord[i].Length / 2, i + Console.LargestWindowHeight / 2 - 6);
                 Console.WriteLine(firstWord[i]);
             }
             Thread.Sleep(1000);
 
             string[] secondWord = theText.Split("\r\n");
-            for (int i = 0;i < secondWord.Length;i++)
+            for (int i = 0; i < secondWord.Length; i++)
             {
-                Console.SetCursorPosition((Console.LargestWindowWidth / 2) - (secondWord[i].Length / 2), i + (Console.LargestWindowHeight / 2));
+                Console.SetCursorPosition(Console.LargestWindowWidth / 2 - secondWord[i].Length / 2, i + Console.LargestWindowHeight / 2);
                 Console.WriteLine(secondWord[i]);
             }
             Thread.Sleep(1000);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.Items
 {
     internal class Equipment
     {

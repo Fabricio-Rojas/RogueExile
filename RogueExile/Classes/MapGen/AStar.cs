@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.MapGen
 {
     internal static class AStar
     {
@@ -73,10 +73,10 @@ namespace RogueExile.Classes
                     Cell neighborCell = grid[newX, newY];
 
                     // Skip occupied or inaccessible cells
-                    if ((neighborCell.IsOccupied
+                    if (neighborCell.IsOccupied
                         && !CheckIfIn2DArray(startingRoom.RoomGrid, neighborCell)
                         && !CheckIfIn2DArray(targetRoom.RoomGrid, neighborCell)
-                        && neighborCell.Val != '░')
+                        && neighborCell.Val != '░'
                         || closedList.Contains(neighborCell))
                         continue;
 

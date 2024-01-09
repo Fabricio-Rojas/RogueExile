@@ -8,6 +8,7 @@ namespace RogueExile.Interfaces
 {
     internal interface IRenderable
     {
+        // should only ever manage the displaying and printing of things on the console, not their operations or calculations
         void Render();
     }
 }

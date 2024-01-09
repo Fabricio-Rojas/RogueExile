@@ -1,6 +1,6 @@
 ﻿using RogueExile.Interfaces;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.MapGen
 {
     internal class Room
     {
@@ -41,8 +41,8 @@ namespace RogueExile.Classes
 
                     for (int i = 0; i < 4; i++)
                     {
-                        int neighbourCellX = mapCell.X + (dx[i]*2);
-                        int neighbourCellY = mapCell.Y + (dy[i]*2);
+                        int neighbourCellX = mapCell.X + dx[i] * 2;
+                        int neighbourCellY = mapCell.Y + dy[i] * 2;
                         Cell neighbourCell = Map.mapGrid[neighbourCellX, neighbourCellY];
                         if (neighbourCell.IsOccupied) return false;
                     }
@@ -51,13 +51,13 @@ namespace RogueExile.Classes
                     switch (cell.X)
                     {
                         case int val when val == startX:
-                            cell = cell.SetVal(cell.Y == startY ? '╔' : (cell.Y == startY + Height - 1 ? '╚' : '║'));
+                            cell = cell.SetVal(cell.Y == startY ? '╔' : cell.Y == startY + Height - 1 ? '╚' : '║');
                             break;
                         case int val when val == startX + Width - 1:
-                            cell = cell.SetVal(cell.Y == startY ? '╗' : (cell.Y == startY + Height - 1 ? '╝' : '║'));
+                            cell = cell.SetVal(cell.Y == startY ? '╗' : cell.Y == startY + Height - 1 ? '╝' : '║');
                             break;
                         default:
-                            cell = cell.SetVal(cell.Y == startY ? '═' : (cell.Y == startY + Height - 1 ? '═' : '·'));
+                            cell = cell.SetVal(cell.Y == startY ? '═' : cell.Y == startY + Height - 1 ? '═' : '·');
                             break;
                     }
                     cell = cell.SetOccupied(true);
@@ -123,7 +123,7 @@ namespace RogueExile.Classes
                 {
                     Cell currentCoord = RoomGrid[col, row];
                     Map.mapGrid[startX + col, startY + row] = currentCoord;
-                    RoomCenter = Map.mapGrid[startX + (Width / 2), startY + (Height / 2)];
+                    RoomCenter = Map.mapGrid[startX + Width / 2, startY + Height / 2];
                 }
             }
             return true;

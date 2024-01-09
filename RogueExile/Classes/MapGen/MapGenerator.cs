@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogueExile.Classes
+namespace RogueExile.Classes.MapGen
 {
     internal class MapGenerator : IRenderable
     {
@@ -19,6 +19,13 @@ namespace RogueExile.Classes
             mapH = Console.LargestWindowHeight - 2;
             mapGrid = new Cell[mapW, mapH];
             rooms = new List<Room>();
+        }
+        public void Generate(int level)
+        {
+            GenerateBorders();
+            AddRooms(level);
+            AddPaths();
+            Render();
         }
         private void GenerateBorders()
         {
@@ -37,14 +44,35 @@ namespace RogueExile.Classes
                 }
             }
         }
-        private void AddRooms()
+        private void AddRooms(int level)
         {
-            bool roomPossible = true;
-            while (roomPossible)
+            int roomLimit = 0;
+
+            if (level < 15)
+            {
+                roomLimit = 2 * level;
+            }
+            else
+            {
+                roomLimit = int.MaxValue;
+            }
+
+            int roomsGenerated = 0;
+
+            while (roomsGenerated < roomLimit)
             {
                 Room newRoom = new(this);
-                roomPossible = newRoom.FindRoomSpace();
-                if (roomPossible) rooms.Add(newRoom);
+                bool roomPossible = newRoom.FindRoomSpace();
+
+                if (roomPossible)
+                {
+                    rooms.Add(newRoom);
+                    roomsGenerated++;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         private void AddPaths()
@@ -72,21 +100,6 @@ namespace RogueExile.Classes
                 }
                 GeneratePath(startingRoom, firstTarget);
                 GeneratePath(startingRoom, secondTarget);
-            }
-        }
-        private void PrintMap()
-        {
-            Console.CursorVisible = false;
-            for (int col = 0; col < mapW; col++)
-            {
-                for (int row = 0; row < mapH; row++)
-                {
-                    Cell currentCoord = mapGrid[col, row];
-                    Console.SetCursorPosition(currentCoord.X, currentCoord.Y);
-                    Console.ForegroundColor = currentCoord.Color;
-                    Console.Write(currentCoord.Val);
-                    Console.ResetColor();
-                }
             }
         }
         private void GeneratePath(Room startingRoom, Room? targetRoom)
@@ -128,10 +141,18 @@ namespace RogueExile.Classes
         }
         public void Render()
         {
-            GenerateBorders();
-            AddRooms();
-            AddPaths();
-            PrintMap();
+            Console.CursorVisible = false;
+            for (int col = 0; col < mapW; col++)
+            {
+                for (int row = 0; row < mapH; row++)
+                {
+                    Cell currentCoord = mapGrid[col, row];
+                    Console.SetCursorPosition(currentCoord.X, currentCoord.Y);
+                    Console.ForegroundColor = currentCoord.Color;
+                    Console.Write(currentCoord.Val);
+                    Console.ResetColor();
+                }
+            }
         }
     }
 }
