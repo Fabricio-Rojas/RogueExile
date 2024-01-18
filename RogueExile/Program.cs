@@ -17,6 +17,7 @@ Console.OutputEncoding = Encoding.UTF8;
 - add a UI menu that lets you see your inventory and change your equipment
 - add fog of war that gets permanently cleared after it has been in a radius where the player explored
 - add level completion after all enemies have been defeated, and generate a new level
+- save character session progression in the form of json files that can be written and read
  */
 
 Game game = new();
@@ -24,3 +25,13 @@ game.Start();
 
 // add enemies, scale enemy stat amounts and room quantity by character level
 // use scalings from text game
+
+/* https://theasciicode.com.ar/
+╔══╩══╗
+║     ║
+╣     ╠
+║     ║
+╚══╦══╝
+╬
+░▒▓·■@
+*/

@@ -130,13 +130,3 @@ namespace RogueExile.Classes.MapGen
         }
     }
 }
-
-/* https://theasciicode.com.ar/
-╔══╩══╗
-║     ║
-╣     ╠
-║     ║
-╚══╦══╝
-╬
-░▒▓·■@
-*/

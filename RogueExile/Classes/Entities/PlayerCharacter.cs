@@ -12,10 +12,10 @@ namespace RogueExile.Classes.Entities
 {
     internal class PlayerCharacter : IRenderable, IMovable
     {
-        private int _currentHealth, _exp, _lvlUpThreshold;
+        private int _currentHealth, _exp;
 
         public string Name;
-        public int Level, Gold, BaseStrength, BaseDefense, MaxHealth;
+        public int Level, Gold, BaseStrength, BaseDefense, MaxHealth, LvlUpThreshold;
         public char Icon;
         public ConsoleColor Color;
         public int Exp
@@ -23,7 +23,7 @@ namespace RogueExile.Classes.Entities
             get { return _exp; }
             set
             {
-                if (value >= _lvlUpThreshold)
+                if (value >= LvlUpThreshold)
                 {
                     LevelUp();
                     _exp = 0;
@@ -69,8 +69,8 @@ namespace RogueExile.Classes.Entities
             BaseDefense = (int)Math.Round(10 * Random.NextDouble()) + 3;
             MaxHealth = 100;
             CurrentHealth = MaxHealth;
+            LvlUpThreshold = 100;
             Exp = 0;
-            _lvlUpThreshold = 100;
 
             WeaponList = new List<Weapon>();
             ArmourList = new List<Armour>();
@@ -82,7 +82,7 @@ namespace RogueExile.Classes.Entities
             AddNewArmor(EquippedArmour);
             AddNewConsumable(new Consumable(0));
 
-            CurrentLocation = spawnLocation.SetVal(Icon).SetColor(Color);
+            CurrentLocation = spawnLocation;
             MapGrid = mapGrid;
         }
         public void Spawn()
@@ -123,7 +123,7 @@ namespace RogueExile.Classes.Entities
 
             if (CellUnder != null)
             {
-                Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
+                Console.SetCursorPosition(CellUnder.X, CellUnder.Y);
                 Console.ForegroundColor = CellUnder.Color;
                 Console.Write(CellUnder.Val);
                 Console.ResetColor();
@@ -139,7 +139,7 @@ namespace RogueExile.Classes.Entities
             int OldHealth = MaxHealth;
             MaxHealth = (int)(MaxHealth * 1.2);
             CurrentHealth += MaxHealth - OldHealth;
-            _lvlUpThreshold = (int)((1 - 1 / (0.112 * Level + 1)) * 1000);
+            LvlUpThreshold = (int)((1 - 1 / (0.112 * Level + 1)) * 1000);
         }
         public void AddNewWeapon(Weapon weapon)
         {

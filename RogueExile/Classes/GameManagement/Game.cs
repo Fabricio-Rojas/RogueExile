@@ -12,10 +12,11 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace RogueExile.Classes.GameManagement
 {
-    internal class Game : IRenderable
+    internal class Game
     {
         private MapGenerator _map;
         private PlayerCharacter _character;
+        private MenuManager _menuManager;
         private readonly Random _random;
 
         public bool GameOver = false;
@@ -43,11 +44,12 @@ namespace RogueExile.Classes.GameManagement
             _map = new MapGenerator();
             _map.Generate(1);
 
-            MenuManager.DisplayUI();
-
             Cell spawnLocation = _map.rooms[_random.Next(0, _map.rooms.Count)].RoomCenter;
             _character = new PlayerCharacter(playerName, spawnLocation, _map.mapGrid);
             _character.Spawn();
+
+            _menuManager = new MenuManager(_character);
+            _menuManager.DisplayUI();
 
             GenerateEnemies(); // generate enemies within rooms
 
@@ -67,23 +69,19 @@ namespace RogueExile.Classes.GameManagement
         }
         public void GameTurn()
         {
-            ConsoleKey key = Console.ReadKey(intercept: true).Key;
-            PlayerTurnKeyPress(key);
-            Render();
+            bool turnCompleted = false;
+            while (!turnCompleted)
+            {
+                ConsoleKey key = Console.ReadKey(intercept: true).Key;
+                turnCompleted = PlayerTurnKeyPress(key);
+            }
+            Update();
             while (Console.KeyAvailable)
             {
                 Console.ReadKey(intercept: true);
             }
         }
-        public void ShowMenu()
-        {
-            Console.SetCursorPosition(0, Console.WindowHeight * 2);
-            Console.SetCursorPosition(0, Console.WindowHeight);
-            WriteCentered("Press any key to continue", (int)(Console.WindowHeight * 1.5));
-            Console.ReadKey(true);
-            Console.SetCursorPosition(0, 0);
-        }
-        public void PlayerTurnKeyPress(ConsoleKey key)
+        public bool PlayerTurnKeyPress(ConsoleKey key)
         {
             switch (key)
             {
@@ -112,18 +110,21 @@ namespace RogueExile.Classes.GameManagement
                     break;
 
                 case ConsoleKey.Escape:
-                    ShowMenu();
-                    break;
+                    _menuManager.ShowMenu();
+                    return false;
 
                 default:
-                    break;
+                    return false;
             }
+
+            // opening the menu or pressing a wrong key will not skip player's turn, only movements will
+            return true;
         }
         public void GenerateEnemies()
         {
 
         }
-        public void Render()
+        public void Update()
         {
             //_enemyCharacter.Render();
             _character.Render();

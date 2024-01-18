@@ -16,7 +16,7 @@ namespace RogueExile.Classes.MapGen
         public MapGenerator()
         {
             mapW = Console.LargestWindowWidth - 2;
-            mapH = Console.LargestWindowHeight - 2;
+            mapH = Console.LargestWindowHeight - 3;
             mapGrid = new Cell[mapW, mapH];
             rooms = new List<Room>();
         }
@@ -50,7 +50,7 @@ namespace RogueExile.Classes.MapGen
 
             if (level < 15)
             {
-                roomLimit = 2 * level;
+                roomLimit = 3 + (2 * level);
             }
             else
             {
