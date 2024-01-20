@@ -77,10 +77,11 @@ namespace RogueExile.Classes.Items
                 Price = random.Next(50, 100);
             }
         }
-        public Weapon(string name, int power)
+        public Weapon(string name, int power, int price)
         {
             Name = name;
             Power = power;
+            Price = price;
             IsBought = true;
         }
     }
@@ -150,10 +151,11 @@ namespace RogueExile.Classes.Items
                 Price = random.Next(25, 75);
             }
         }
-        public Armour(string name, int power)
+        public Armour(string name, int power, int price)
         {
             Name = name;
             Power = power;
+            Price = price;
             IsBought = true;
         }
     }

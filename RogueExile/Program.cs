@@ -25,6 +25,7 @@ game.Start();
 
 // add enemies, scale enemy stat amounts and room quantity by character level
 // use scalings from text game
+// add player property to keep track of enemies slain
 
 /* https://theasciicode.com.ar/
 ╔══╩══╗

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace RogueExile.Classes.GameManagement
 {
@@ -71,11 +72,101 @@ namespace RogueExile.Classes.GameManagement
         }
         private void DisplayEquipment()
         {
-            ResetToMenuArea();
+            bool correctKeyPressed = false;
+
+            while (!correctKeyPressed)
+            {
+                ResetToMenuArea();
+
+                List<string> lines = new List<string>()
+                {
+                    "Showing Equipment",
+                    "",
+                    $"Equipped Weapon: {_playerCharacter.EquippedWeapon.Name}, {_playerCharacter.EquippedWeapon.Power} Power, {_playerCharacter.EquippedWeapon.Price} Gold",
+                    $"Equipped Armour: {_playerCharacter.EquippedArmour.Name}, {_playerCharacter.EquippedArmour.Power} Power, {_playerCharacter.EquippedArmour.Price} Gold",
+                    $"",
+                    $"1. Change Equipped Weapon",
+                    $"2. Change Equipped Armour",
+                    $"3. Use Consumable",
+                    $"4. Show Full Inventory",
+                    "",
+                    "(Press ESC to return)"
+                };
+
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    Game.WriteCentered(lines[i], _menuMiddleScreenHeight - (lines.Count / 2) + i);
+                }
+
+                ConsoleKey key = Console.ReadKey(intercept: true).Key;
+                correctKeyPressed = HandleDisplayEquipmentKeyPress(key);
+            }
+        }
+        private bool HandleDisplayEquipmentKeyPress(ConsoleKey key)
+        {
+            switch (key)
+            {
+                case ConsoleKey.D1:
+                    break;
+
+                case ConsoleKey.D2:
+                    break;
+
+                case ConsoleKey.D3:
+                    break;
+
+                case ConsoleKey.D4:
+                    break;
+
+                case ConsoleKey.Escape:
+                    return true;
+
+                default:
+                    return false;
+            }
+            return false;
         }
         private void DisplayStatistics()
         {
-            ResetToMenuArea();
+            bool correctKeyPressed = false;
+
+            while (!correctKeyPressed)
+            {
+                ResetToMenuArea();
+                // add lines in this list and then add code to automatically offset the lines' height relative to the _menuMiddleScreenHeight
+                // such that it is always centered, might be reusable elsewhere
+                List<string> lines = new List<string>()
+                {
+                    "Showing Statistics",
+                    "",
+                    $"Name: {_playerCharacter.Name}",
+                    $"Level: {_playerCharacter.Level}",
+                    $"Health: {_playerCharacter.CurrentHealth} / {_playerCharacter.MaxHealth}",
+                    $"Exp: {_playerCharacter.Exp} / {_playerCharacter.LvlUpThreshold}",
+                    $"Gold: {_playerCharacter.Gold}",
+                    $"Base Strength: {_playerCharacter.BaseStrength}",
+                    $"Base Defense: {_playerCharacter.BaseDefense}",
+                    "Monsters Slain: {add monsters slain prop to player}",
+                    "",
+                    "(Press ESC to return)"
+                };
+
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    Game.WriteCentered(lines[i], _menuMiddleScreenHeight - (lines.Count / 2) + i);
+                }
+
+                ConsoleKey key = Console.ReadKey(intercept: true).Key;
+                switch (key)
+                {
+                    case ConsoleKey.Escape:
+                        correctKeyPressed = true;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
         private void ConfirmExitRequest()
         {

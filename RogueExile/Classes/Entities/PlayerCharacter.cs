@@ -76,8 +76,8 @@ namespace RogueExile.Classes.Entities
             ArmourList = new List<Armour>();
             ConsumableList = new List<Consumable>();
 
-            EquippedWeapon = new Weapon("Bloodied Fist", 0);
-            EquippedArmour = new Armour("Tattered Rags", 0);
+            EquippedWeapon = new Weapon("Bloodied Fist", 0, 0);
+            EquippedArmour = new Armour("Tattered Rags", 0, 0);
             AddNewWeapon(EquippedWeapon);
             AddNewArmor(EquippedArmour);
             AddNewConsumable(new Consumable(0));
