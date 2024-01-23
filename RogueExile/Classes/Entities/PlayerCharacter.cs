@@ -12,12 +12,11 @@ namespace RogueExile.Classes.Entities
 {
     internal class PlayerCharacter : IRenderable, IMovable
     {
+        /* Stats */
         private int _currentHealth, _exp;
 
         public string Name;
         public int Level, Gold, BaseStrength, BaseDefense, MaxHealth, LvlUpThreshold;
-        public char Icon;
-        public ConsoleColor Color;
         public int Exp
         {
             get { return _exp; }
@@ -47,14 +46,27 @@ namespace RogueExile.Classes.Entities
                 _currentHealth = value;
             }
         }
+
+        /* Status Effects */
+        public bool HasStrengthBuff;
+        public bool HasAcidBuff;
+
+        /* Equipped Items */
         public Weapon EquippedWeapon;
         public Armour EquippedArmour;
+
+        /* Inventories */
         public List<Weapon> WeaponList;
         public List<Armour> ArmourList;
         public List<Consumable> ConsumableList;
-
+        
+        /* Map, Position & Movement */
+        public char Icon;
+        public ConsoleColor Color;
         private Cell CurrentLocation;
         private readonly Cell[,] MapGrid;
+
+        /* Misc */
         private Random Random;
         public PlayerCharacter(string name, Cell spawnLocation, Cell[,] mapGrid)
         {
@@ -71,6 +83,9 @@ namespace RogueExile.Classes.Entities
             CurrentHealth = MaxHealth;
             LvlUpThreshold = 100;
             Exp = 0;
+
+            HasStrengthBuff = false;
+            HasAcidBuff = false;
 
             WeaponList = new List<Weapon>();
             ArmourList = new List<Armour>();
@@ -131,6 +146,10 @@ namespace RogueExile.Classes.Entities
 
             Render();
         }
+        public void Attack()
+        {
+
+        }
         public void LevelUp()
         {
             Level++;
@@ -141,35 +160,44 @@ namespace RogueExile.Classes.Entities
             CurrentHealth += MaxHealth - OldHealth;
             LvlUpThreshold = (int)((1 - 1 / (0.112 * Level + 1)) * 1000);
         }
-        public void AddNewWeapon(Weapon weapon)
+        public bool AddNewWeapon(Weapon weapon)
         {
             if (WeaponList.Count + 1 > 9)
             {
-                Console.WriteLine("You can only hold up to 9 weapons at once");
-                Console.ReadKey(intercept: true);
-                return;
+                return false;
             }
             WeaponList.Add(weapon);
+            return true;
         }
-        public void AddNewArmor(Armour armour)
+        public bool AddNewArmor(Armour armour)
         {
             if (ArmourList.Count + 1 > 9)
             {
-                Console.WriteLine("You can only hold up to 9 armours at once");
-                Console.ReadKey(intercept: true);
-                return;
+                return false;
             }
             ArmourList.Add(armour);
+            return true;
         }
-        public void AddNewConsumable(Consumable consumable)
+        public bool AddNewConsumable(Consumable consumable)
         {
             if (ConsumableList.Count + 1 > 9)
             {
-                Console.WriteLine("You can only hold up to 9 consumables at once");
-                Console.ReadKey(intercept: true);
-                return;
+                return false;
             }
             ConsumableList.Add(consumable);
+            return true;
+        }
+        public void EquipWeapon(Weapon weapon)
+        {
+            EquippedWeapon.IsEquipped = false;
+            weapon.IsEquipped = true;
+            EquippedWeapon = weapon;
+        }
+        public void EquipArmour(Armour armour)
+        {
+            EquippedArmour.IsEquipped = false;
+            armour.IsEquipped = true;
+            EquippedArmour = armour;
         }
         public void Render()
         {

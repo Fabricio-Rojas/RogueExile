@@ -15,7 +15,7 @@ namespace RogueExile.Classes.GameManagement
     internal class Game
     {
         private MapGenerator _map;
-        private PlayerCharacter _character;
+        private PlayerCharacter _player;
         private MenuManager _menuManager;
         private readonly Random _random;
 
@@ -45,10 +45,10 @@ namespace RogueExile.Classes.GameManagement
             _map.Generate(1);
 
             Cell spawnLocation = _map.rooms[_random.Next(0, _map.rooms.Count)].RoomCenter;
-            _character = new PlayerCharacter(playerName, spawnLocation, _map.mapGrid);
-            _character.Spawn();
+            _player = new PlayerCharacter(playerName, spawnLocation, _map.mapGrid);
+            _player.Spawn();
 
-            _menuManager = new MenuManager(_character);
+            _menuManager = new MenuManager(_player);
             _menuManager.DisplayUI();
 
             GenerateEnemies(); // generate enemies within rooms
@@ -88,25 +88,25 @@ namespace RogueExile.Classes.GameManagement
                 case ConsoleKey.W:
                 case ConsoleKey.NumPad8:
                 case ConsoleKey.UpArrow:
-                    _character.Move(Direction.Up);
+                    _player.Move(Direction.Up);
                     break;
 
                 case ConsoleKey.A:
                 case ConsoleKey.NumPad4:
                 case ConsoleKey.LeftArrow:
-                    _character.Move(Direction.Left);
+                    _player.Move(Direction.Left);
                     break;
 
                 case ConsoleKey.S:
                 case ConsoleKey.NumPad2:
                 case ConsoleKey.DownArrow:
-                    _character.Move(Direction.Down);
+                    _player.Move(Direction.Down);
                     break;
 
                 case ConsoleKey.D:
                 case ConsoleKey.NumPad6:
                 case ConsoleKey.RightArrow:
-                    _character.Move(Direction.Right);
+                    _player.Move(Direction.Right);
                     break;
 
                 case ConsoleKey.Escape:
@@ -127,12 +127,20 @@ namespace RogueExile.Classes.GameManagement
         public void Update()
         {
             //_enemyCharacter.Render();
-            _character.Render();
+            _player.Render();
+            _menuManager.DisplayUI();
         }
         public static void WriteCentered(string text, int? topPosition = null)
         {
             Console.SetCursorPosition(Console.WindowWidth / 2 - text.Length / 2, topPosition ?? Console.CursorTop);
             Console.Write(text);
+        }
+        public static void WriteColumnCentered(List<string> lines, int topPosition)
+        {
+            for (int i = 0; i < lines.Count; i++)
+            {
+                WriteCentered(lines[i], topPosition - (lines.Count / 2) + i);
+            }
         }
     }
 }

@@ -55,6 +55,11 @@ namespace RogueExile.Classes.GameManagement
             string lineLength = "                                         ..................                                         ";
             int startingLeft = Console.LargestWindowWidth / 2 - lineLength.Length / 2;
 
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(true);
+            }
+
             Thread keyPressThread = new Thread(ListenForKeyPress);
             keyPressThread.Start();
 
@@ -85,7 +90,7 @@ namespace RogueExile.Classes.GameManagement
             Thread.Sleep(400);
             Console.SetCursorPosition(0, 0);
 
-            while (Console.KeyAvailable) { Console.ReadKey(false); }
+            while (Console.KeyAvailable) { Console.ReadKey(true); }
         }
         private static string NameRequest()
         {

@@ -6,10 +6,24 @@ using System.Threading.Tasks;
 
 namespace RogueExile.Classes.Items
 {
-    internal class Equipment
+    abstract class Equipment
     {
+        protected Random random = new Random();
+        public string Name;
+        public int Power, Price;
+        public bool IsBought, IsEquipped;
+
+        public Equipment() { }
+        public Equipment(string name, int power, int price)
+        {
+            Name = name;
+            Power = power;
+            Price = price;
+            IsBought = true;
+            IsEquipped = true;
+        }
     }
-    internal class Weapon
+    internal class Weapon : Equipment
     {
         private List<string> _weakWeaponNames = new List<string>
         {
@@ -50,14 +64,10 @@ namespace RogueExile.Classes.Items
             "Celestial Star Spear",
             "Mjolnir, The Hammer"
         };
-
-        private Random random = new Random();
-        public string Name;
-        public int Power, Price;
-        public bool IsBought;
         public Weapon(int level)
         {
             IsBought = false;
+            IsEquipped = false;
             if (level <= 5)
             {
                 Name = _weakWeaponNames[random.Next(_weakWeaponNames.Count)];
@@ -77,15 +87,9 @@ namespace RogueExile.Classes.Items
                 Price = random.Next(50, 100);
             }
         }
-        public Weapon(string name, int power, int price)
-        {
-            Name = name;
-            Power = power;
-            Price = price;
-            IsBought = true;
-        }
+        public Weapon(string name, int power, int price) : base(name, power, price) { }
     }
-    internal class Armour
+    internal class Armour : Equipment
     {
         private List<string> _weakArmourNames = new List<string>
         {
@@ -125,13 +129,11 @@ namespace RogueExile.Classes.Items
             "Radiant Soulmail",
             "Eternal Vanguard's Plate"
         };
-        private Random random = new Random();
-        public string Name;
-        public int Power, Price;
-        public bool IsBought;
+
         public Armour(int level)
         {
             IsBought = false;
+            IsEquipped = false;
             if (level <= 5)
             {
                 Name = _weakArmourNames[random.Next(_weakArmourNames.Count)];
@@ -151,12 +153,6 @@ namespace RogueExile.Classes.Items
                 Price = random.Next(25, 75);
             }
         }
-        public Armour(string name, int power, int price)
-        {
-            Name = name;
-            Power = power;
-            Price = price;
-            IsBought = true;
-        }
+        public Armour(string name, int power, int price) : base(name, power, price) { }
     }
 }

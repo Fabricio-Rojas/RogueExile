@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RogueExile.Classes.GameManagement
 {
-    internal class SaveManager
+    public static class SaveManager
     {
     }
 }

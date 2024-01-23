@@ -10,6 +10,7 @@ namespace RogueExile.Classes.Entities
 {
     internal class EnemyCharacter : IRenderable, IMovable
     {
+        public string Name { get; set; }
         public EnemyCharacter()
         {
 
