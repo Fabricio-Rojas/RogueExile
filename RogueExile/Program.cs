@@ -44,6 +44,8 @@ game.Start();
 // as such you should be able to confirm your selection with the enter key, but for some menus you should still be able to use the number keys
 // this would remove the 9 slot limitation for some inventories and skill bars
 
+// add monster types similar to that of nethack
+
 /* https://theasciicode.com.ar/
 ╔══╩══╗
 ║     ║
@@ -51,5 +53,5 @@ game.Start();
 ║     ║
 ╚══╦══╝
 ╬
-░▒▓█·■@
+░▒▓█·■@¤§πΣΦΩδφ∩Þøα▲▼◘◙☼♥♦öæ&%
 */

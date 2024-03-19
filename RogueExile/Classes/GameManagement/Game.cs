@@ -15,6 +15,7 @@ namespace RogueExile.Classes.GameManagement
     internal class Game
     {
         private MapGenerator _map;
+        private EnemyManager _enemyManager;
         private PlayerCharacter _player;
         private MenuManager _menuManager;
         private readonly Random _random;
@@ -42,16 +43,16 @@ namespace RogueExile.Classes.GameManagement
             string playerName = IntroSequence.Play();
 
             _map = new MapGenerator();
-            _map.Generate(1);
+            _map.Generate(level: 1);
 
-            Cell spawnLocation = _map.rooms[_random.Next(0, _map.rooms.Count)].RoomCenter;
-            _player = new PlayerCharacter(playerName, spawnLocation, _map.mapGrid);
-            _player.Spawn();
+            _player = new PlayerCharacter(playerName, _map.SpawnRoom.RoomCenter, _map.mapGrid);
 
+            // make menuManager a static class and have the player be passed in as a variable
             _menuManager = new MenuManager(_player);
             _menuManager.DisplayUI();
 
-            GenerateEnemies(); // generate enemies within rooms
+            _enemyManager = new EnemyManager(_map);
+            _enemyManager.GenerateEnemies(_player.Level);
 
             do
             {
@@ -75,7 +76,13 @@ namespace RogueExile.Classes.GameManagement
                 ConsoleKey key = Console.ReadKey(intercept: true).Key;
                 turnCompleted = PlayerTurnKeyPress(key);
             }
+
+            // perform enemy turns here (some sort of loop that goes over all enemies)
+            _enemyManager.PerformTurns();
+
+            // all renders should be done through update (make changes)
             Update();
+
             while (Console.KeyAvailable)
             {
                 Console.ReadKey(intercept: true);
@@ -111,6 +118,7 @@ namespace RogueExile.Classes.GameManagement
 
                 case ConsoleKey.Escape:
                     _menuManager.ShowMenu();
+                    // have menuManager return a value
                     return false;
 
                 default:
@@ -120,14 +128,10 @@ namespace RogueExile.Classes.GameManagement
             // opening the menu or pressing a wrong key will not skip player's turn, only movements will
             return true;
         }
-        public void GenerateEnemies()
-        {
-
-        }
         public void Update()
         {
-            //_enemyCharacter.Render();
             _player.Render();
+            _enemyManager.RenderEnemies();
             _menuManager.DisplayUI();
         }
         public static void WriteCentered(string text, int? topPosition = null)

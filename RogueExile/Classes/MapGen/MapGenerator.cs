@@ -13,6 +13,9 @@ namespace RogueExile.Classes.MapGen
         public static int mapH;
         public Cell[,] mapGrid;
         public List<Room> rooms;
+
+        public Room SpawnRoom;
+        public Room EndRoom;
         public MapGenerator()
         {
             mapW = Console.LargestWindowWidth - 2;
@@ -25,6 +28,7 @@ namespace RogueExile.Classes.MapGen
             GenerateBorders();
             AddRooms(level);
             AddPaths();
+            AStar.FindLongestPath(this);
             Render();
         }
         private void GenerateBorders()

@@ -71,8 +71,8 @@ namespace RogueExile.Classes.Items
             if (level <= 5)
             {
                 Name = _weakWeaponNames[random.Next(_weakWeaponNames.Count)];
-                Power = random.Next(3, 7) * level;
-                Price = random.Next(1, 20);
+                Power = random.Next(5, 11) * level;
+                Price = random.Next(1, 21);
             }
             else if (level <= 10)
             {

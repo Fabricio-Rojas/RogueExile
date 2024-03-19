@@ -64,6 +64,7 @@ namespace RogueExile.Classes.Entities
         public char Icon;
         public ConsoleColor Color;
         private Cell CurrentLocation;
+        private char ValUnder;
         private readonly Cell[,] MapGrid;
 
         /* Misc */
@@ -77,8 +78,8 @@ namespace RogueExile.Classes.Entities
             Level = 1;
             Color = ConsoleColor.Cyan;
             Gold = Random.Next(10 + 1);
-            BaseStrength = (int)Math.Round(20 * Random.NextDouble()) + 5;
-            BaseDefense = (int)Math.Round(10 * Random.NextDouble()) + 3;
+            BaseStrength = (int)Math.Round(21 * Random.NextDouble()) + 5;
+            BaseDefense = (int)Math.Round(11 * Random.NextDouble()) + 3;
             MaxHealth = 100;
             CurrentHealth = MaxHealth;
             LvlUpThreshold = 100;
@@ -97,11 +98,12 @@ namespace RogueExile.Classes.Entities
             AddNewArmor(EquippedArmour);
             AddNewConsumable(new Consumable(0));
 
-            CurrentLocation = spawnLocation;
             MapGrid = mapGrid;
-        }
-        public void Spawn()
-        {
+            ValUnder = spawnLocation.Val;
+            spawnLocation = spawnLocation.SetVal(Icon);
+            CurrentLocation = spawnLocation;
+            MapGrid[spawnLocation.X, spawnLocation.Y] = spawnLocation;
+
             Render();
         }
         public void Move(Direction direction)
@@ -116,8 +118,6 @@ namespace RogueExile.Classes.Entities
             };
             NewLocation = MapGrid[NewLocation.X, NewLocation.Y];
 
-            Cell CellUnder;
-
             switch (NewLocation.Val)
             {
                 case '█':
@@ -130,19 +130,37 @@ namespace RogueExile.Classes.Entities
                 case '╝':
                     return;
 
+                case '%':
+                case '&':
+                case 'æ':
+                case 'ö':
+                case '¤':
+                case '§':
+                case 'Σ':
+                case 'Φ':
+                case 'Ω':
+                case 'δ':
+                case 'φ':
+                case 'ø':
+                case 'α':
+                case '☼':
+                    Attack();
+                    return;
+
                 default:
-                    CellUnder = CurrentLocation;
-                    CurrentLocation = NewLocation;
                     break;
             }
 
-            if (CellUnder != null)
-            {
-                Console.SetCursorPosition(CellUnder.X, CellUnder.Y);
-                Console.ForegroundColor = CellUnder.Color;
-                Console.Write(CellUnder.Val);
-                Console.ResetColor();
-            }
+            CurrentLocation = CurrentLocation.SetVal(ValUnder);
+            MapGrid[CurrentLocation.X, CurrentLocation.Y] = CurrentLocation;
+            Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
+            Console.ForegroundColor = CurrentLocation.Color;
+            Console.Write(CurrentLocation.Val);
+            Console.ResetColor();
+            
+            ValUnder = NewLocation.Val;
+            CurrentLocation = NewLocation.SetVal(Icon);
+            MapGrid[CurrentLocation.X, CurrentLocation.Y] = CurrentLocation;
 
             Render();
         }
@@ -158,7 +176,7 @@ namespace RogueExile.Classes.Entities
             int OldHealth = MaxHealth;
             MaxHealth = (int)(MaxHealth * 1.2);
             CurrentHealth += MaxHealth - OldHealth;
-            LvlUpThreshold = (int)((1 - 1 / (0.112 * Level + 1)) * 1000);
+            LvlUpThreshold = Level < 15 ? (int)((3.5714 * Math.Pow(Level, 2)) + 96.4286) : (int)(42.7 + (1 - (1 / (((0.4 * (Level + 0.012)) + 1))) * 1000));
         }
         public bool AddNewWeapon(Weapon weapon)
         {
@@ -201,6 +219,8 @@ namespace RogueExile.Classes.Entities
         }
         public void Render()
         {
+            // should only be called on spawn and update
+
             Console.SetCursorPosition(CurrentLocation.X, CurrentLocation.Y);
             Console.ForegroundColor = Color;
             Console.Write(Icon);

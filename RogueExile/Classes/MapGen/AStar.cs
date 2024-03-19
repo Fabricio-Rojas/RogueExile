@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Xml.Linq;
 
 namespace RogueExile.Classes.MapGen
@@ -14,12 +15,6 @@ namespace RogueExile.Classes.MapGen
         {
             Cell startCell = startingRoom.RoomCenter;
             Cell targetCell = targetRoom.RoomCenter;
-
-            // Helper function to calculate Manhattan distance heuristic
-            int CalculateManhattanDistance(Cell a, Cell b)
-            {
-                return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
-            }
 
             // Check if the cell coordinates are within the grid boundaries
             bool IsValidCell(int x, int y)
@@ -93,6 +88,91 @@ namespace RogueExile.Classes.MapGen
             // Path not found
             return null;
         }
+        public static void FindLongestPath(MapGenerator map)
+        {
+            List<Room> rooms = map.rooms;
+            List<Cell> longestPath = new List<Cell>();
+
+            while (rooms.Count > 1)
+            {
+                Room currentRoom = rooms[0];
+                rooms.Remove(currentRoom);
+
+                for (int i = 0; i < rooms.Count; i++)
+                {
+                    Room comparedRoom = rooms[i];
+
+                    Cell startCell = currentRoom.RoomCenter;
+                    Cell targetCell = comparedRoom.RoomCenter;
+
+                    // Initialize the open and closed lists
+                    PriorityQueue<Node> openList = new PriorityQueue<Node>();
+                    HashSet<Cell> closedList = new HashSet<Cell>();
+
+                    // Add the starting node to the open list
+                    openList.Enqueue(new Node(startCell, null, 0, CalculateManhattanDistance(startCell, targetCell)));
+
+                    while (openList.Count > 0)
+                    {
+                        // Get the node with the lowest F value from the open list
+                        Node currentNode = openList.Dequeue();
+                        Cell currentCell = currentNode.Cell;
+
+                        // Check if the goal cell is reached
+                        if (currentCell == targetCell)
+                        {
+                            // Reconstruct and return the path
+                            List<Cell> path = new List<Cell>();
+                            Node node = currentNode;
+                            while (node != null)
+                            {
+                                path.Add(node.Cell);
+                                node = node.Parent;
+                            }
+                            path.Reverse();
+
+                            if (path.Count > longestPath.Count)
+                            {
+                                longestPath = path;
+                                map.SpawnRoom = currentRoom;
+                                map.EndRoom = comparedRoom;
+                            }
+                        }
+
+                        // Mark the current cell as visited
+                        closedList.Add(currentCell);
+
+                        // Generate neighboring cells
+                        int[] dx = { 0, 1, 0, -1 };
+                        int[] dy = { 1, 0, -1, 0 };
+
+                        for (int j = 0; j < 4; j++)
+                        {
+                            int newX = currentCell.X + dx[j];
+                            int newY = currentCell.Y + dy[j];
+
+                            Cell neighborCell = map.mapGrid[newX, newY];
+
+                            // Skip occupied or inaccessible cells
+                            if (neighborCell.Val != '░'
+                                && neighborCell.Val != '#'
+                                && neighborCell.Val != '·'
+                                || closedList.Contains(neighborCell))
+                                continue;
+
+                            int gCost = currentNode.G + 1; // Assuming each step costs 1
+
+                            if (!openList.Any(n => n.Cell == neighborCell) || gCost < currentNode.G) // change to evaluate the neighbour node
+                            {
+                                Node newNode = new Node(neighborCell, currentNode, gCost, CalculateManhattanDistance(neighborCell, targetCell));
+
+                                openList.Enqueue(newNode);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         static bool CheckIfIn2DArray(Cell[,] array, Cell value)
         {
             for (int row = 0; row < array.GetLength(0); row++)
@@ -106,6 +186,10 @@ namespace RogueExile.Classes.MapGen
                 }
             }
             return false;
+        }
+        static int CalculateManhattanDistance(Cell a, Cell b)
+        {
+            return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
         }
         private class Node : IComparable<Node>
         {
